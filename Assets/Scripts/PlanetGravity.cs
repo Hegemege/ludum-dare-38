@@ -7,12 +7,11 @@ public class PlanetGravity : MonoBehaviour
     public GameObject PlanetReference;
 
     [HideInInspector]
-    public float DeathTimer;
-
-    [HideInInspector]
     public float Gravity;
 
     private Rigidbody rb;
+
+    private bool hitGround;
 
     void Awake()
     {
@@ -21,7 +20,7 @@ public class PlanetGravity : MonoBehaviour
 
     void Start() 
     {
-        Destroy(gameObject, DeathTimer);
+
     }
     
     void Update() 
@@ -36,5 +35,18 @@ public class PlanetGravity : MonoBehaviour
         towardsPlanet *= Gravity;
 
         rb.AddForce(towardsPlanet, ForceMode.Force);
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        if (hitGround) return;
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            hitGround = true;
+            Gravity /= 3f;
+            rb.drag = 0.30f;
+            rb.angularDrag = 3f;
+        }
     }
 }

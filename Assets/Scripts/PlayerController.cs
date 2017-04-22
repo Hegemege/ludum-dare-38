@@ -218,7 +218,17 @@ public class PlayerController : MonoBehaviour
 
         // Unparent all objects in the model
         DestructionParts = new List<GameObject>();
-        DestructionParts.AddRange(ModelReference.GetComponentsInChildren<Transform>().Select(t => t.gameObject));
+        DestructionParts.AddRange(ModelReference.GetComponentsInChildren<MeshRenderer>().Select(t => t.gameObject));
+
+        var allParts = ModelReference.GetComponentsInChildren<Transform>().Select(t => t.gameObject);
+
+        foreach (var part in allParts)
+        {
+            part.transform.parent = null;
+            part.layer = LayerMask.NameToLayer("Debris");
+
+            Destroy(part, Random.Range(4f, 7f));
+        }
 
         foreach (var part in DestructionParts)
         {
@@ -229,6 +239,7 @@ public class PlayerController : MonoBehaviour
             var rb = part.AddComponent<Rigidbody>();
             rb.useGravity = false;
             rb.drag = 0.10f;
+            rb.angularDrag = 0.1f;
 
             var randomStartForce = Velocity + Random.onUnitSphere * 2f;
             var randomStartTorque = Random.onUnitSphere * 0.5f;
@@ -242,7 +253,6 @@ public class PlayerController : MonoBehaviour
             var pg = part.AddComponent<PlanetGravity>();
             pg.Gravity = 20f;
             pg.PlanetReference = PlanetReference;
-            pg.DeathTimer = 5f + Random.Range(-2f, 2f);
         }
 
         // TODO: spawn explosion?
