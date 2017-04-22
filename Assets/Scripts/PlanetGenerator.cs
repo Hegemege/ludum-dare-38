@@ -63,11 +63,7 @@ public class PlanetGenerator : MonoBehaviour
                 var towardsCenter = (PlanetReference.transform.position - originalVertices[i]).normalized;
                 deformedVertices[i] += towardsCenter * side * PlanetDeformScale;
             }
-
         }
-
-
-
 
         // Calculate vertex colors - get highest and lowest first
         var highest = Mathf.NegativeInfinity;
@@ -118,7 +114,8 @@ public class PlanetGenerator : MonoBehaviour
                     break;
                 }
             }
-
+            /*
+            // For color smoothing
             var colorBalance = (distance - limits[slotIndex]) / (limits[slotIndex + 1] - limits[slotIndex]);
 
             colors[i] = new Color(
@@ -127,8 +124,9 @@ public class PlanetGenerator : MonoBehaviour
                 Mathf.Lerp(startColor.b, endColor.b, colorBalance),
                 Mathf.Lerp(startColor.a, endColor.a, colorBalance)
                 );
+            */
 
-            //colors[i] = startColor;
+            colors[i] = startColor;
         }
 
         planetMesh.vertices = deformedVertices;
@@ -136,9 +134,8 @@ public class PlanetGenerator : MonoBehaviour
         planetMesh.RecalculateBounds();
         planetMesh.RecalculateNormals();
 
-        // Apply mesh
-        PlanetReference.GetComponentsInChildren<MeshFilter>().Single().sharedMesh = planetMesh;
-
+        // Update collider
+        PlanetReference.GetComponentInChildren<MeshCollider>().sharedMesh = planetMesh;
     }
 
     /// <summary>

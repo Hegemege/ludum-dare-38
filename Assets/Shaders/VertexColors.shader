@@ -8,12 +8,12 @@
      
         CGPROGRAM
         #pragma surface surf Lambert
- 
+
         sampler2D _MainColor;
  
         struct Input {
             float2 uv_MainColor;
-            half4 color : COLOR;
+			half4 color : COLOR;
         };
  
         void surf (Input IN, inout SurfaceOutput o) {
