@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     // Physics parameters
     public float Airspeed;
     public float TurningSpeed;
+    public float VelocitySmoothing;
 
     public float BoostScale;
     public float BrakeScale;
@@ -43,6 +44,7 @@ public class PlayerController : MonoBehaviour
     // Privates
     private CharacterController characterController;
     private Quaternion modelRotationTarget;
+    private Vector3 targetVelocity;
 
     // Input
     private float HorizontalInput
@@ -69,7 +71,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         // Initialize velocity as forward
-        Velocity = Airspeed * new Vector3(0f, 0f, 1f);
+        Velocity = Airspeed * new Vector3(0f, 0f, 1f) * Time.fixedDeltaTime;
 
         // Move the player to be at the correct height
         var groundPoint = GroundPosition(transform.position);
@@ -112,10 +114,10 @@ public class PlayerController : MonoBehaviour
         if (Boosting) effectiveAirspeed += Airspeed * BoostScale * Mathf.Abs(VerticalInput);
         if (Braking) effectiveAirspeed += Airspeed * BrakeScale * Mathf.Abs(VerticalInput);
 
-        Velocity += newForward * effectiveAirspeed;
+        var newVelocity = Velocity + newForward * effectiveAirspeed;
 
         // Project velocity to be at constant distance from ground
-        Vector3 groundPoint = GroundPosition(transform.position + Velocity * dt);
+        Vector3 groundPoint = GroundPosition(transform.position + newVelocity * dt);
         var planetToGround = (groundPoint - PlanetReference.transform.position).normalized;
 
         var normalizedTarget = groundPoint + planetToGround * DistanceFromGround;
@@ -127,8 +129,8 @@ public class PlayerController : MonoBehaviour
         // Move drop marker under the player
         DropMarker.transform.position = GroundPosition(transform.position);
 
-        // Apply projected velocity
-        Velocity = normalizedVelocity;
+        // Apply projected velocity after smoothing
+        Velocity = Vector3.Slerp(Velocity, normalizedVelocity, VelocitySmoothing);
 
         characterController.Move(Velocity * dt);
 
