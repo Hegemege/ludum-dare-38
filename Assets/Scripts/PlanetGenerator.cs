@@ -65,13 +65,27 @@ public class PlanetGenerator : MonoBehaviour
             }
         }
 
+        // Split vertices - makes a new vertex for every triangle
+        // From http://answers.unity3d.com/questions/798510/flat-shading.html
+        Vector3[] oldVertices = deformedVertices;
+        int[] triangles = planetMesh.triangles;
+        Vector3[] newVertices = new Vector3[triangles.Length];
+
+        for (int i = 0; i < triangles.Length; i++)
+        {
+            newVertices[i] = oldVertices[triangles[i]];
+            triangles[i] = i;
+        }
+        planetMesh.vertices = newVertices;
+        planetMesh.triangles = triangles;
+
         // Calculate vertex colors - get highest and lowest first
         var highest = Mathf.NegativeInfinity;
         var lowest = Mathf.Infinity;
 
-        for (int i = 0; i < originalVertices.Length; ++i)
+        for (int i = 0; i < newVertices.Length; ++i)
         {
-            var distance = Vector3.Distance(PlanetReference.transform.position, deformedVertices[i]);
+            var distance = Vector3.Distance(PlanetReference.transform.position, newVertices[i]);
             if (distance > highest)
             {
                 highest = distance;
@@ -93,11 +107,11 @@ public class PlanetGenerator : MonoBehaviour
         }
 
         // Blend the colors based on the highest/lowest
-        Color[] colors = new Color[originalVertices.Length];
+        Color[] colors = new Color[newVertices.Length];
 
-        for (int i = 0; i < originalVertices.Length; ++i)
+        for (int i = 0; i < newVertices.Length; ++i)
         {
-            var distance = Vector3.Distance(PlanetReference.transform.position, deformedVertices[i]);
+            var distance = Vector3.Distance(PlanetReference.transform.position, newVertices[i]);
 
             int slotIndex = 0;
             Color startColor = Color.white;
@@ -129,7 +143,21 @@ public class PlanetGenerator : MonoBehaviour
             colors[i] = startColor;
         }
 
-        planetMesh.vertices = deformedVertices;
+        // Go through all triangles, and set the vertex colors to be the average of the three
+        for (var i = 0; i < planetMesh.triangles.Length - 3; i += 3)
+        {
+            var color1 = colors[i];
+            var color2 = colors[i + 1];
+            var color3 = colors[i + 2];
+
+            var average = (color1 + color2 + color3) / 3f;
+
+            colors[i] = average;
+            colors[i + 1] = average;
+            colors[i + 2] = average;
+        }
+
+        //planetMesh.vertices = deformedVertices;
         planetMesh.colors = colors;
         planetMesh.RecalculateBounds();
         planetMesh.RecalculateNormals();
