@@ -15,6 +15,9 @@ public class PlanetGenerator : MonoBehaviour
 
     public float PlanetDeformScale;
     public int PlanetDeformRuns;
+
+    public Color[] PlanetTerrainColors;
+
     public int PlatformCount;
     public float DistanceBetweenPlatforms;
     public int MaxTries;
@@ -63,13 +66,79 @@ public class PlanetGenerator : MonoBehaviour
 
         }
 
+
+
+
+        // Calculate vertex colors - get highest and lowest first
+        var highest = Mathf.NegativeInfinity;
+        var lowest = Mathf.Infinity;
+
+        for (int i = 0; i < originalVertices.Length; ++i)
+        {
+            var distance = Vector3.Distance(PlanetReference.transform.position, deformedVertices[i]);
+            if (distance > highest)
+            {
+                highest = distance;
+            }
+
+            if (distance < lowest)
+            {
+                lowest = distance;
+            }
+        }
+
+        var range = highest - lowest;
+
+        // Precalculate the color limits
+        float[] limits = new float[PlanetTerrainColors.Length];
+        for (int i = 0; i < limits.Length; ++i)
+        {
+            limits[i] = lowest + i * range / (float) limits.Length;
+        }
+
+        // Blend the colors based on the highest/lowest
+        Color[] colors = new Color[originalVertices.Length];
+
+        for (int i = 0; i < originalVertices.Length; ++i)
+        {
+            var distance = Vector3.Distance(PlanetReference.transform.position, deformedVertices[i]);
+
+            int slotIndex = 0;
+            Color startColor = Color.white;
+            Color endColor = Color.white;
+
+            // Figure which slot it fits in
+            for (int j = 0; j < limits.Length - 1; ++j)
+            {
+                if (limits[j] < distance && distance < limits[j + 1])
+                {
+                    slotIndex = j;
+                    startColor = PlanetTerrainColors[j];
+                    endColor = PlanetTerrainColors[j + 1];
+                    break;
+                }
+            }
+
+            var colorBalance = (distance - limits[slotIndex]) / (limits[slotIndex + 1] - limits[slotIndex]);
+
+            colors[i] = new Color(
+                Mathf.Lerp(startColor.r, endColor.r, colorBalance),
+                Mathf.Lerp(startColor.g, endColor.g, colorBalance),
+                Mathf.Lerp(startColor.b, endColor.b, colorBalance),
+                Mathf.Lerp(startColor.a, endColor.a, colorBalance)
+                );
+
+            //colors[i] = startColor;
+        }
+
         planetMesh.vertices = deformedVertices;
+        planetMesh.colors = colors;
         planetMesh.RecalculateBounds();
         planetMesh.RecalculateNormals();
 
+        // Apply mesh
         PlanetReference.GetComponentsInChildren<MeshFilter>().Single().sharedMesh = planetMesh;
 
-        // Calculate vertex colors
     }
 
     /// <summary>
