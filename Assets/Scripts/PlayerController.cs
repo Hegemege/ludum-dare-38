@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 
 public class PlayerController : MonoBehaviour
@@ -12,6 +14,7 @@ public class PlayerController : MonoBehaviour
 
     // Self-references
     public GameObject ModelReference;
+    public GameObject ParticleEffects;
     public float TurningSmoothing;
     public float TurningAngle;
 
@@ -41,6 +44,9 @@ public class PlayerController : MonoBehaviour
     [HideInInspector]
     public bool Braking;
 
+    [HideInInspector]
+    public bool Alive;
+
     // Privates
     private CharacterController characterController;
     private Quaternion modelRotationTarget;
@@ -66,6 +72,7 @@ public class PlayerController : MonoBehaviour
     void Awake() 
     {
         characterController = GetComponent<CharacterController>();
+        Alive = true;
     }
 
     void Start()
@@ -81,6 +88,13 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (!Alive) return;
+
+        if (Mathf.Abs(Input.GetAxis("Space")) > InputDeadzone)
+        {
+            Explode();
+        }
+
         // Boost/brake handling
         Boosting = false;
         Braking = false;
@@ -99,6 +113,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!Alive) return;
+
         float dt = Time.fixedDeltaTime;
         // Helper vector towards the planet from the player
         Vector3 towardsPlanet = PlanetReference.transform.position - transform.position;
@@ -161,5 +177,51 @@ public class PlayerController : MonoBehaviour
 
         Debug.LogWarning("No ground under player. Shouldn't happen.");
         return Vector3.zero;
+    }
+
+    /// <summary>
+    /// Explodes the player model and spawns particles
+    /// </summary>
+    public void Explode()
+    {
+        Alive = false;
+
+        // Unparent all objects in the model
+        var parts = new List<GameObject>();
+        parts.AddRange(ModelReference.GetComponentsInChildren<Transform>().Select(t => t.gameObject));
+
+        foreach (var part in parts)
+        {
+            part.transform.parent = null;
+            part.layer = LayerMask.NameToLayer("Debris");
+
+            // Add rigid body and collider, add random start impulse force and torque
+            var rb = part.AddComponent<Rigidbody>();
+            rb.useGravity = false;
+
+            var randomStartForce = Velocity + Random.onUnitSphere * 2f;
+            var randomStartTorque = Random.onUnitSphere * 0.5f;
+
+            rb.AddForce(randomStartForce, ForceMode.Impulse);
+            rb.AddTorque(randomStartTorque, ForceMode.Impulse);
+
+            part.AddComponent<BoxCollider>();
+
+            // Add custom gravity
+            var pg = part.AddComponent<PlanetGravity>();
+            pg.Gravity = 20f;
+            pg.PlanetReference = PlanetReference;
+            pg.DeathTimer = 5f;
+        }
+
+        // TODO: spawn explosion?
+        var particleSystems = ParticleEffects.GetComponentsInChildren<ParticleSystem>();
+
+        foreach (var ps in particleSystems)
+        {
+            var em = ps.emission;
+            em.rateOverTime = 0f;
+            Destroy(ps, ps.main.startLifetime.constant);
+        }
     }
 }
