@@ -10,6 +10,12 @@ public class CameraController : MonoBehaviour
     public float TargetHeight;
     public float TargetAngle;
 
+    public float PositionSmoothing;
+    public float RotationSmoothing;
+
+    private Vector3 targetPosition;
+    private Quaternion targetRotation;
+
     void Awake()
     {
 
@@ -34,13 +40,16 @@ public class CameraController : MonoBehaviour
         // Make the camera follow the target at thte given distance and height
         // Place us behind the player at the given distance
 
-        transform.position = FollowTarget.transform.position - FollowTarget.transform.forward * TargetDistance;
-        transform.position += -towardsPlanet.normalized * TargetHeight;
+        targetPosition = FollowTarget.transform.position - FollowTarget.transform.forward * TargetDistance;
+        targetPosition += -towardsPlanet.normalized * TargetHeight;
 
-        // TODO: Add smoothing
         // Apply look rotation
         var towardsTarget = FollowTarget.transform.position - transform.position;
         var localUp = Quaternion.AngleAxis(-TargetAngle, FollowTarget.transform.right);
-        transform.rotation = localUp * Quaternion.LookRotation(towardsTarget, -towardsPlanet);
+        targetRotation = localUp * Quaternion.LookRotation(towardsTarget, -towardsPlanet);
+
+        // Apply + smoothing
+        transform.position = Vector3.Slerp(transform.position, targetPosition, PositionSmoothing);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSmoothing);
     }
 }
