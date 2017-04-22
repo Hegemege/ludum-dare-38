@@ -52,6 +52,8 @@ public class PlayerController : MonoBehaviour
     private Quaternion modelRotationTarget;
     private Vector3 targetVelocity;
 
+    private List<GameObject> DestructionParts;
+
     // Input
     private float HorizontalInput
     {
@@ -113,7 +115,28 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!Alive) return;
+        if (!Alive)
+        {
+            foreach (var part in DestructionParts)
+            {
+                if (!part)
+                {
+                    return;
+                }
+            }
+
+            var positions = DestructionParts.Select(part => part.transform.position).ToList();
+
+            Vector3 averagePosition = new Vector3();
+            foreach (var position in positions)
+            {
+                averagePosition += position;
+            }
+            averagePosition /= positions.Count;
+
+            transform.position = averagePosition;
+            return;
+        }
 
         float dt = Time.fixedDeltaTime;
         // Helper vector towards the planet from the player
@@ -187,10 +210,10 @@ public class PlayerController : MonoBehaviour
         Alive = false;
 
         // Unparent all objects in the model
-        var parts = new List<GameObject>();
-        parts.AddRange(ModelReference.GetComponentsInChildren<Transform>().Select(t => t.gameObject));
+        DestructionParts = new List<GameObject>();
+        DestructionParts.AddRange(ModelReference.GetComponentsInChildren<Transform>().Select(t => t.gameObject));
 
-        foreach (var part in parts)
+        foreach (var part in DestructionParts)
         {
             part.transform.parent = null;
             part.layer = LayerMask.NameToLayer("Debris");
@@ -198,6 +221,7 @@ public class PlayerController : MonoBehaviour
             // Add rigid body and collider, add random start impulse force and torque
             var rb = part.AddComponent<Rigidbody>();
             rb.useGravity = false;
+            rb.drag = 0.10f;
 
             var randomStartForce = Velocity + Random.onUnitSphere * 2f;
             var randomStartTorque = Random.onUnitSphere * 0.5f;
@@ -211,7 +235,7 @@ public class PlayerController : MonoBehaviour
             var pg = part.AddComponent<PlanetGravity>();
             pg.Gravity = 20f;
             pg.PlanetReference = PlanetReference;
-            pg.DeathTimer = 5f;
+            pg.DeathTimer = 5f + Random.Range(-2f, 2f);
         }
 
         // TODO: spawn explosion?
