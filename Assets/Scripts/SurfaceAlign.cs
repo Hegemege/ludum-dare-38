@@ -5,12 +5,14 @@ public class SurfaceAlign : MonoBehaviour
 {
     public GameObject PlanetReference;
 
-    void Awake() 
-    {
-
-    }
+    public bool UpdateEveryFrame;
 
     void Start() 
+    {
+        AlignOnSurface();
+    }
+
+    private void AlignOnSurface()
     {
         // Project current forward onto the plane defined by the surface normal
         var normal = (transform.position - PlanetReference.transform.position).normalized;
@@ -18,9 +20,12 @@ public class SurfaceAlign : MonoBehaviour
 
         transform.rotation = Quaternion.LookRotation(projectedForward, normal);
     }
-    
-    void Update() 
+
+    void FixedUpdate()
     {
-    
+        if (UpdateEveryFrame)
+        {
+            AlignOnSurface();
+        }
     }
 }

@@ -5,13 +5,25 @@ using System.Security.Cryptography;
 public class PlayerController : MonoBehaviour
 {
     public GameObject PlanetReference;
+    public GameObject DropMarker;
 
     // TMEP
     public GameObject debugSphere;
 
+    // Self-references
+    public GameObject ModelReference;
+    public float TurningSmoothing;
+    public float TurningAngle;
+
+    // Input
+    public float InputDeadzone;
+
     // Physics parameters
     public float Airspeed;
     public float TurningSpeed;
+
+    public float BoostScale;
+    public float BrakeScale;
 
     public float DistanceFromGround;
 
@@ -22,8 +34,15 @@ public class PlayerController : MonoBehaviour
     [HideInInspector]
     public Vector3 Velocity;
 
+    [HideInInspector]
+    public bool Boosting;
+    
+    [HideInInspector]
+    public bool Braking;
+
     // Privates
     private CharacterController characterController;
+    private Quaternion modelRotationTarget;
 
     // Input
     private float HorizontalInput
@@ -60,7 +79,20 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        
+        // Boost/brake handling
+        Boosting = false;
+        Braking = false;
+        if (Mathf.Abs(VerticalInput) > InputDeadzone)
+        {
+            if (VerticalInput < 0)
+            {
+                Braking = true;
+            }
+            else
+            {
+                Boosting = true;
+            }
+        }
     }
 
     void FixedUpdate()
@@ -75,7 +107,12 @@ public class PlayerController : MonoBehaviour
         // Turning
         newForward = Quaternion.AngleAxis(HorizontalInput * TurningSpeed * dt, -towardsPlanet) * newForward;
 
-        Velocity += Airspeed * newForward;
+        // Air speed calculations
+        var effectiveAirspeed = Airspeed;
+        if (Boosting) effectiveAirspeed += Airspeed * BoostScale * Mathf.Abs(VerticalInput);
+        if (Braking) effectiveAirspeed += Airspeed * BrakeScale * Mathf.Abs(VerticalInput);
+
+        Velocity += newForward * effectiveAirspeed;
 
         // Project velocity to be at constant distance from ground
         Vector3 groundPoint = GroundPosition(transform.position + Velocity * dt);
@@ -84,15 +121,26 @@ public class PlayerController : MonoBehaviour
         var normalizedTarget = groundPoint + planetToGround * DistanceFromGround;
         var normalizedVelocity = normalizedTarget - transform.position;
 
-        debugSphere.transform.position = groundPoint;
+        // TEMP
+        debugSphere.transform.position = GroundPosition(transform.position);
+
+        // Move drop marker under the player
+        DropMarker.transform.position = GroundPosition(transform.position);
 
         // Apply projected velocity
         Velocity = normalizedVelocity;
 
         characterController.Move(Velocity * dt);
 
+
+
         // Rotate the player to travel forward
         transform.rotation = Quaternion.LookRotation(Velocity, -towardsPlanet);
+
+        // Rotate the player model when turning
+        var turning = TurningAngle * -HorizontalInput;
+        modelRotationTarget = Quaternion.AngleAxis(turning, Vector3.forward);
+        ModelReference.transform.localRotation = Quaternion.Slerp(ModelReference.transform.localRotation, modelRotationTarget, TurningSmoothing);
     }
 
     /// <summary>
