@@ -171,9 +171,8 @@ public class PlayerController : MonoBehaviour
         // Apply projected velocity after smoothing
         Velocity = Vector3.Slerp(Velocity, normalizedVelocity, VelocitySmoothing);
 
+        // Move the plane
         characterController.Move(Velocity * dt);
-
-
 
         // Rotate the player to travel forward
         transform.rotation = Quaternion.LookRotation(Velocity, -towardsPlanet);
@@ -182,6 +181,14 @@ public class PlayerController : MonoBehaviour
         var turning = TurningAngle * -HorizontalInput;
         modelRotationTarget = Quaternion.AngleAxis(turning, Vector3.forward);
         ModelReference.transform.localRotation = Quaternion.Slerp(ModelReference.transform.localRotation, modelRotationTarget, TurningSmoothing);
+    }
+
+    void OnControllerColliderHit(ControllerColliderHit other)
+    {
+        if (other.gameObject.CompareTag("Obstacle"))
+        {
+            Explode();
+        }
     }
 
     /// <summary>
@@ -193,7 +200,7 @@ public class PlayerController : MonoBehaviour
         Ray ray = new Ray(from, towardsPlanet);
 
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, GroundLayerMask))
+        if (Physics.Raycast(ray, out hit, 1000f, GroundLayerMask))
         {
             return hit.point;
         }
