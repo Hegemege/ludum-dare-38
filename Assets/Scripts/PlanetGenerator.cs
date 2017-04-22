@@ -136,6 +136,7 @@ public class PlanetGenerator : MonoBehaviour
 
         // Update collider
         PlanetReference.GetComponentInChildren<MeshCollider>().sharedMesh = planetMesh;
+        PlanetReference.GetComponent<SphereCollider>().radius = lowest * 7500;
     }
 
     /// <summary>

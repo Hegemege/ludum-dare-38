@@ -224,7 +224,7 @@ public class PlayerController : MonoBehaviour
 
         foreach (var part in allParts)
         {
-            part.transform.parent = null;
+            part.transform.parent = GameObject.Find("Debris").transform;
             part.layer = LayerMask.NameToLayer("Debris");
 
             Destroy(part, Random.Range(4f, 7f));
@@ -232,14 +232,12 @@ public class PlayerController : MonoBehaviour
 
         foreach (var part in DestructionParts)
         {
-            part.transform.parent = null;
-            part.layer = LayerMask.NameToLayer("Debris");
-
             // Add rigid body and collider, add random start impulse force and torque
             var rb = part.AddComponent<Rigidbody>();
             rb.useGravity = false;
             rb.drag = 0.10f;
             rb.angularDrag = 0.1f;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
             var randomStartForce = Velocity + Random.onUnitSphere * 2f;
             var randomStartTorque = Random.onUnitSphere * 0.5f;
