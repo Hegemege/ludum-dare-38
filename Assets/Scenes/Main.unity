@@ -443,6 +443,10 @@ Prefab:
       propertyPath: m_Name
       value: Chopper (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1710357876638916, guid: 2732d26906177bd499318f095c298b2c, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2732d26906177bd499318f095c298b2c, type: 2}
   m_IsPrefabParent: 0

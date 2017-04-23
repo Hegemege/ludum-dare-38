@@ -113,12 +113,10 @@ public class ChopperController : MonoBehaviour
         {
             if (Vector3.Distance(avoidTarget.transform.position, transform.position) > ChopperAvoidDistance)
             {
-                Debug.Log("Remove avoid");
                 avoidTarget = null;
             }
             else
             {
-                Debug.Log("ABORT");
                 var towardsAvoid = avoidTarget.transform.position - transform.position;
                 var towardsAvoidNormalized = Vector3.ProjectOnPlane(towardsAvoid, -towardsPlanet);
                 HorizontalInput = -Mathf.Clamp(Vector3.Dot(towardsAvoidNormalized.normalized, transform.right) * 2, -1f, 1f);

@@ -3560,10 +3560,10 @@ MonoBehaviour:
   TurningAngle: 35
   PlayerFollowDistance: 30
   PlayerSeekDistance: 80
-  PlayerFireDistance: 40
+  PlayerFireDistance: 50
   FireInterval: 3
   FireConeAngle: 0.3
-  ChopperAvoidDistance: 30
+  ChopperAvoidDistance: 35
   FollowVelocityAdjust: 100
   Airspeed: 1350
   TurningSpeed: 500
