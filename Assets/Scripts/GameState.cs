@@ -66,6 +66,17 @@ public class GameState : MonoBehaviour
     
     void Update()
     {
+        if (Input.GetAxis("Escape") > 0.1f)
+        {
+            SceneManager.LoadScene("Title");
+        }
+
+        if (SceneManager.GetActiveScene().ToString() == "Title")
+        {
+            instance = null;
+            Destroy(gameObject);
+        }
+
         if (Paused) return;
 
         // Advance to next level

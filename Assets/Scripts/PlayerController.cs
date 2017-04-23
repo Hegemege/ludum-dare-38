@@ -104,7 +104,8 @@ public class PlayerController : MonoBehaviour
 
         if (Mathf.Abs(Input.GetAxis("Space")) > InputDeadzone)
         {
-            Explode();
+            // Debug purposes
+            //Explode();
         }
 
         // Boost/brake handling

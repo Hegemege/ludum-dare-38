@@ -369,6 +369,7 @@ MonoBehaviour:
   MarkerText: {fileID: 1587807093}
   LoadingImage: {fileID: 1373621423}
   LoadingText: {fileID: 653759994}
+  FadeTime: 1
 --- !u!1 &591121097
 GameObject:
   m_ObjectHideFlags: 0
@@ -1357,15 +1358,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LevelIndex: 0
-  Levels: 4
-  LevelPlatformBuildingWeights: 04000000050000000600000007000000
-  LevelPlatformFarmWeights: 0f0000000f0000000f0000000f000000
-  LevelPlatformFarmLandWeights: 0f0000000f0000000f0000000f000000
-  LevelPlatformCount: 010000001e0000002800000032000000
-  LevelMountainCount: 02000000050000000900000005000000
-  LevelChopperCount: 00000000010000000400000005000000
-  LevelRegenerateBuildings: 00000001
-  LevelRegenerateChoppers: 00000101
+  Levels: 5
+  LevelPlatformBuildingWeights: 040000000500000006000000070000000a000000
+  LevelPlatformFarmWeights: 0f0000000f0000000f0000000f0000000f000000
+  LevelPlatformFarmLandWeights: 0f0000000f0000000f0000000f0000000f000000
+  LevelPlatformCount: 070000000f000000190000002800000032000000
+  LevelMountainCount: 0200000005000000090000000200000005000000
+  LevelChopperCount: 0000000001000000030000000500000008000000
+  LevelRegenerateBuildings: 0000000001
+  LevelRegenerateChoppers: 0000000101
   MaxMarkers: 0
   PickedMarkers: 0
   ChoppersDestroyed: 0
