@@ -9,6 +9,7 @@ public class ChopperController : MonoBehaviour
     public GameObject PlayerReference;
     public GameObject MissilePrefab;
     public GameObject MissileSpawnAnchor;
+    public GameObject ExplosionPrefab;
 
     // Self-references
     public GameObject ModelReference;
@@ -17,6 +18,8 @@ public class ChopperController : MonoBehaviour
     public float PlayerFollowDistance;
     public float PlayerSeekDistance;
     public float PlayerFireDistance;
+    public float FireInterval;
+    public float FireConeAngle;
 
     public float FollowVelocityAdjust;
 
@@ -45,6 +48,8 @@ public class ChopperController : MonoBehaviour
     private Vector3 targetVelocity;
 
     private List<GameObject> DestructionParts;
+
+    private float fireTimer;
 
     void Awake() 
     {
@@ -79,6 +84,8 @@ public class ChopperController : MonoBehaviour
         // Helper vector towards the planet from the chopper
         Vector3 towardsPlanet = PlanetReference.transform.position - transform.position;
 
+        float playerDistance = Vector3.Distance(PlayerReference.transform.position, transform.position);
+
         // Input
         var newForward = Velocity.normalized;
 
@@ -92,7 +99,7 @@ public class ChopperController : MonoBehaviour
         HorizontalInput = Mathf.Clamp(Vector3.Dot(towardsPlayerNormalized, transform.right) * 2, -1f, 1f);
 
         // If player is too close, and behind us, bank the opposite way
-        if (Vector3.Distance(PlayerReference.transform.position, transform.position) < PlayerFollowDistance && 
+        if (playerDistance < PlayerFollowDistance && 
             Vector3.Dot(towardsPlayerNormalized, transform.forward) < 0)
         {
             HorizontalInput *= -1;
@@ -119,12 +126,12 @@ public class ChopperController : MonoBehaviour
         var effectiveAirspeed = Airspeed;
 
         // Adjust airspeed based on vertical input and if the player is too close or too far
-        if (Vector3.Distance(PlayerReference.transform.position, transform.position) > PlayerSeekDistance)
+        if (playerDistance > PlayerSeekDistance)
         {
             effectiveAirspeed += FollowVelocityAdjust;
         }
 
-        if (Vector3.Distance(PlayerReference.transform.position, transform.position) < PlayerFollowDistance)
+        if (playerDistance < PlayerFollowDistance)
         {
             effectiveAirspeed -= FollowVelocityAdjust;
         }
@@ -166,7 +173,15 @@ public class ChopperController : MonoBehaviour
 
 
         // FIRING MISSILES
+        fireTimer += dt;
 
+        if (fireTimer > FireInterval && 
+            playerDistance < PlayerFireDistance &&
+            Vector3.Dot(towardsPlayerNormalized, transform.forward) > FireConeAngle)
+        {
+            fireTimer = 0f;
+            FireMissile();
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -243,6 +258,21 @@ public class ChopperController : MonoBehaviour
             pg.PlanetReference = PlanetReference;
         }
 
-        // TODO: spawn explosion?
+        var explosion = Instantiate(ExplosionPrefab);
+        explosion.transform.position = transform.position;
+        explosion.transform.rotation = transform.rotation;
+
+        Destroy(gameObject);
+    }
+
+    private void FireMissile()
+    {
+        var missile = Instantiate(MissilePrefab);
+        missile.GetComponent<MissileController>().PlanetReference = PlanetReference;
+
+        missile.GetComponent<MissileController>().Velocity = Velocity;
+
+        missile.transform.position = MissileSpawnAnchor.transform.position;
+        missile.transform.rotation = MissileSpawnAnchor.transform.rotation;
     }
 }

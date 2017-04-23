@@ -3523,12 +3523,16 @@ MonoBehaviour:
   MissilePrefab: {fileID: 1095610135083514, guid: e4f3ee8077cc2834785167138802e30f,
     type: 2}
   MissileSpawnAnchor: {fileID: 1271982628762742}
+  ExplosionPrefab: {fileID: 1665420671859220, guid: a2241b141d9e20b48aa800d8847215bb,
+    type: 2}
   ModelReference: {fileID: 1107487923976884}
   TurningSmoothing: 0.05
   TurningAngle: 35
   PlayerFollowDistance: 30
   PlayerSeekDistance: 80
-  PlayerFireDistance: 0
+  PlayerFireDistance: 40
+  FireInterval: 3
+  FireConeAngle: 0.3
   FollowVelocityAdjust: 100
   Airspeed: 1350
   TurningSpeed: 500

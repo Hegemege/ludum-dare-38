@@ -6,6 +6,7 @@ using System.Linq;
 public class MissileController : MonoBehaviour 
 {
     public GameObject PlanetReference;
+    public GameObject ExplosionPrefab;
 
     // Physics parameters
     public float Airspeed;
@@ -93,7 +94,10 @@ public class MissileController : MonoBehaviour
             other.gameObject.CompareTag("Player") ||
             other.gameObject.CompareTag("Missile"))
         {
-            // TODO: Spawn explosion particles?
+            var explosion = Instantiate(ExplosionPrefab);
+            explosion.transform.position = transform.position;
+            explosion.transform.rotation = transform.rotation;
+
             Destroy(gameObject);
         }
     }

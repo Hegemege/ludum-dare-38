@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 {
     public GameObject PlanetReference;
     public GameObject DropMarker;
+    public GameObject ExplosionPrefab;
 
     // TMEP
     public GameObject debugSphere;
@@ -257,7 +258,10 @@ public class PlayerController : MonoBehaviour
             pg.PlanetReference = PlanetReference;
         }
 
-        // TODO: spawn explosion?
+        var explosion = Instantiate(ExplosionPrefab);
+        explosion.transform.position = transform.position;
+        explosion.transform.rotation = transform.rotation;
+
         var particleSystems = ParticleEffects.GetComponentsInChildren<ParticleSystem>();
 
         foreach (var ps in particleSystems)

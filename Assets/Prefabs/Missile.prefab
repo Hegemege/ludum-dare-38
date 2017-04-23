@@ -684,10 +684,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlanetReference: {fileID: 0}
+  ExplosionPrefab: {fileID: 1665420671859220, guid: a2241b141d9e20b48aa800d8847215bb,
+    type: 2}
   Airspeed: 2000
   TurningSpeed: 0
   VelocitySmoothing: 0.1
-  DistanceFromGround: 18
+  DistanceFromGround: 17
   GroundLayerMask:
     serializedVersion: 2
     m_Bits: 512
