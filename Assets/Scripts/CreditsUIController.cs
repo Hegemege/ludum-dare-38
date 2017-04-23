@@ -18,6 +18,10 @@ public class CreditsUIController : MonoBehaviour
     {
         if (Input.GetAxis("Escape") > 0.2f)
         {
+            Application.Quit();
+        }
+        else if (Input.GetAxis("C") > 0.2f)
+        {
             SceneManager.LoadScene("Main");
         }
         else if (Input.anyKeyDown)

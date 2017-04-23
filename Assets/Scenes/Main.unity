@@ -439,7 +439,7 @@ MonoBehaviour:
   m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -919,17 +919,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FollowTarget: {fileID: 417841622}
   PlanetReference: {fileID: 609425024}
-  NormalFOV: 60
-  BoostFOV: 70
-  BrakeFOV: 50
-  TargetDistance: 10
-  TargetHeight: 23
+  NormalFOV: 70
+  BoostFOV: 80
+  BrakeFOV: 65
+  TargetDistance: 11
+  TargetHeight: 24
   TargetAngle: -7
   TargetBoostDistance: 12
   TargetBoostHeight: 26
   TargetBoostAngle: -8
-  TargetBrakeDistance: 9
-  TargetBrakeHeight: 18
+  TargetBrakeDistance: 10
+  TargetBrakeHeight: 19
   TargetBrakeAngle: -6
   TransitionSmoothing: 0.05
   PositionSmoothing: 0.1
@@ -1357,7 +1357,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a275538caa86fbd4d88149c2d3a491df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LevelIndex: 4
+  LevelIndex: 0
   Levels: 5
   LevelPlatformBuildingWeights: 040000000500000006000000070000000a000000
   LevelPlatformFarmWeights: 0f0000000f0000000f0000000f0000000f000000

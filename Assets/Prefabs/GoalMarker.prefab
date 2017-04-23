@@ -85,7 +85,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4230978983455116}
-  - component: {fileID: 135513069730810692}
+  - component: {fileID: 136465358566807912}
   m_Layer: 13
   m_Name: Collider
   m_TagString: GoalMarker
@@ -185,7 +185,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1003444217823342}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.2411938, y: 74.219025, z: 10.7235985}
+  m_LocalPosition: {x: 295.0782, y: 680.47296, z: -733.77484}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4430658751564148}
@@ -380,7 +380,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -407,6 +407,7 @@ MonoBehaviour:
   PickupAudio: {fileID: 82497556874893630}
   BobbingSpeed: 400
   BobbingDistance: 1
+  ParentFarm: {fileID: 0}
 --- !u!114 &114385137030126010
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -420,15 +421,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RotationSpeed: 200
   RotationAxis: {x: 0, y: 1, z: 0}
---- !u!135 &135513069730810692
-SphereCollider:
+--- !u!136 &136465358566807912
+CapsuleCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1722551521110224}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 5
+  m_Radius: 3.3
+  m_Height: 20
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
