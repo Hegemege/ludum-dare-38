@@ -44,7 +44,7 @@ public class TitleUIController : MonoBehaviour
             }   
         }
 
-        if (Scroll.transform.position.x < ScrollStop)
+        if (Scroll.transform.localPosition.x < ScrollStop)
         {
             Scroll.transform.position += new Vector3(ScrollSpeed * Time.deltaTime, 0f, 0f);
         }
