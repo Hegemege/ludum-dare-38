@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 
 public class PlayerController : MonoBehaviour
 {
@@ -257,11 +258,21 @@ public class PlayerController : MonoBehaviour
             pg.Gravity = 20f;
             pg.PlanetReference = PlanetReference;
         }
-
+        
+        // Spawn explosion
         var explosion = Instantiate(ExplosionPrefab);
         explosion.transform.position = transform.position;
         explosion.transform.rotation = transform.rotation;
 
+        // Disable colliders
+        var colliders = GetComponentsInChildren<Collider>();
+        foreach (var col in colliders)
+        {
+            col.tag = "Untagged";
+            col.enabled = false;
+        }
+
+        // Disable particle system
         var particleSystems = ParticleEffects.GetComponentsInChildren<ParticleSystem>();
 
         foreach (var ps in particleSystems)
