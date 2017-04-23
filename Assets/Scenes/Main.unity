@@ -483,6 +483,11 @@ Prefab:
       propertyPath: PlayerReference
       value: 
       objectReference: {fileID: 417841622}
+    - target: {fileID: 114156852156376448, guid: 2732d26906177bd499318f095c298b2c,
+        type: 2}
+      propertyPath: ChopperAvoidDistance
+      value: 30
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2732d26906177bd499318f095c298b2c, type: 2}
   m_IsPrefabParent: 0

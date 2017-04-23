@@ -20,6 +20,7 @@ public class ChopperController : MonoBehaviour
     public float PlayerFireDistance;
     public float FireInterval;
     public float FireConeAngle;
+    public float ChopperAvoidDistance;
 
     public float FollowVelocityAdjust;
 
@@ -50,6 +51,8 @@ public class ChopperController : MonoBehaviour
     private List<GameObject> DestructionParts;
 
     private float fireTimer;
+
+    private GameObject avoidTarget;
 
     void Awake() 
     {
@@ -103,6 +106,21 @@ public class ChopperController : MonoBehaviour
             Vector3.Dot(towardsPlayerNormalized, transform.forward) < 0)
         {
             HorizontalInput *= -1;
+        }
+
+        // Other chopper avoidance - this overrides the player following
+        if (avoidTarget != null)
+        {
+            if (Vector3.Distance(avoidTarget.transform.position, transform.position) > ChopperAvoidDistance)
+            {
+                avoidTarget = null;
+            }
+            else
+            {
+                var towardsAvoid = avoidTarget.transform.position - transform.position;
+                var towardsAvoidNormalized = Vector3.ProjectOnPlane(towardsAvoid, -towardsPlanet);
+                HorizontalInput = -Mathf.Clamp(Vector3.Dot(towardsAvoidNormalized, transform.right) * 2, -1f, 1f);
+            }
         }
 
         // Acceleration/deceleration
@@ -193,6 +211,15 @@ public class ChopperController : MonoBehaviour
         {
             Explode();
         }
+
+        if (other.gameObject.CompareTag("ChopperAvoid"))
+        {
+            // If they are the same
+            if (other.gameObject.transform.root == gameObject.transform.root) return;
+
+            // Set them as the avoidance target, until they go far away - only one chopper to avoid
+            avoidTarget = other.gameObject.transform.root.gameObject;
+        }
     }
 
 
@@ -244,7 +271,7 @@ public class ChopperController : MonoBehaviour
             rb.angularDrag = 0.01f;
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
-            var randomStartForce = Velocity + Random.onUnitSphere * 2f;
+            var randomStartForce = Velocity/5f + Random.onUnitSphere * 2f;
             var randomStartTorque = Random.onUnitSphere * 10f;
 
             rb.AddForce(randomStartForce, ForceMode.Impulse);

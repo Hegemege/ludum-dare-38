@@ -244,7 +244,7 @@ public class PlayerController : MonoBehaviour
             rb.angularDrag = 0.01f;
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
-            var randomStartForce = Velocity + Random.onUnitSphere * 2f;
+            var randomStartForce = Velocity/5f + Random.onUnitSphere * 2f;
             var randomStartTorque = Random.onUnitSphere * 10f;
 
             rb.AddForce(randomStartForce, ForceMode.Impulse);
