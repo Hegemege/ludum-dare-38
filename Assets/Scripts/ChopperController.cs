@@ -216,6 +216,8 @@ public class ChopperController : MonoBehaviour
 
             if (other.gameObject.CompareTag("Missile"))
             {
+                if (other.gameObject.transform.root.GetComponent<MissileController>().Parent == gameObject) return;
+
                 other.gameObject.transform.root.GetComponent<MissileController>().Explode();
             }
 
@@ -318,5 +320,7 @@ public class ChopperController : MonoBehaviour
 
         missile.transform.position = MissileSpawnAnchor.transform.position;
         missile.transform.rotation = MissileSpawnAnchor.transform.rotation;
+
+        missile.GetComponent<MissileController>().Parent = gameObject;
     }
 }

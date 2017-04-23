@@ -266,7 +266,7 @@ MonoBehaviour:
   PlatformLayerMask:
     serializedVersion: 2
     m_Bits: 512
-  PlanetDeformScale: 0.00001
+  PlanetDeformScale: 0.00002
   PlanetDeformRuns: 1500
   PlanetTerrainColors:
   - {r: 0, g: 0.21962471, b: 0.52205884, a: 1}
@@ -487,11 +487,6 @@ Prefab:
       propertyPath: PlayerReference
       value: 
       objectReference: {fileID: 417841622}
-    - target: {fileID: 114156852156376448, guid: 2732d26906177bd499318f095c298b2c,
-        type: 2}
-      propertyPath: ChopperAvoidDistance
-      value: 30
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2732d26906177bd499318f095c298b2c, type: 2}
   m_IsPrefabParent: 0

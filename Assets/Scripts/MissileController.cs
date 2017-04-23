@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 
 public class MissileController : MonoBehaviour 
 {
@@ -23,6 +24,12 @@ public class MissileController : MonoBehaviour
 
     [HideInInspector]
     public bool Alive;
+
+    public float IgnoreParentTime;
+    private float ignoreParentTimer;
+
+    [HideInInspector]
+    public GameObject Parent;
 
     // Privates
     private Vector3 targetVelocity;
@@ -52,6 +59,16 @@ public class MissileController : MonoBehaviour
         }
 
         float dt = Time.fixedDeltaTime;
+
+        if (ignoreParentTimer > IgnoreParentTime)
+        {
+            Parent = null;
+        }
+        else
+        {
+            ignoreParentTimer += dt;
+        }
+
         // Helper vector towards the planet from the chopper
         Vector3 towardsPlanet = PlanetReference.transform.position - transform.position;
 
@@ -94,6 +111,8 @@ public class MissileController : MonoBehaviour
             other.gameObject.CompareTag("Player") ||
             other.gameObject.CompareTag("Missile"))
         {
+            if (other.gameObject.transform.root.gameObject == Parent) return;
+
             if (other.gameObject.CompareTag("Chopper"))
             {
                 other.gameObject.transform.root.GetComponent<ChopperController>().Explode();
