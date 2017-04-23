@@ -38,6 +38,9 @@ public class PlanetGenerator : MonoBehaviour
     public int ChopperCount;
     public float ChopperSpawnSafeDistance;
 
+    public bool RegeneratePlatforms;
+    public bool RegenerateChoppers;
+
     // Privates
     private List<GameObject> platforms;
     private List<GameObject> mountains;
@@ -50,10 +53,33 @@ public class PlanetGenerator : MonoBehaviour
         choppers = new List<GameObject>();
 
         PlatformContentDict = new Dictionary<GameObject, int>();
+
+        // Get level data from GameState
+        var levelNumber = GameState.instance.EffectiveLevelIndex;
+
+        // Platform weights
         for (var i = 0; i < PlatformContentPrefabs.Length; ++i)
         {
-            PlatformContentDict[PlatformContentPrefabs[i]] = PlatformContentWeights[i];
+            if (i == 0)
+            {
+                PlatformContentDict[PlatformContentPrefabs[i]] = GameState.instance.LevelPlatformBuildingWeights[levelNumber];
+            }
+            else if (i == 1)
+            {
+                PlatformContentDict[PlatformContentPrefabs[i]] = GameState.instance.LevelPlatformFarmWeights[levelNumber];
+            }
+            else
+            {
+                PlatformContentDict[PlatformContentPrefabs[i]] = GameState.instance.LevelPlatformFarmLandWeights[levelNumber];
+            }
         }
+
+        // Counts
+        PlatformCount = GameState.instance.LevelPlatformCount[levelNumber];
+        MountainCount = GameState.instance.LevelMountainCount[levelNumber];
+        ChopperCount = GameState.instance.LevelChopperCount[levelNumber];
+        RegeneratePlatforms = GameState.instance.LevelRegenerateBuildings[levelNumber];
+        RegenerateChoppers = GameState.instance.LevelRegenerateChoppers[levelNumber];
     }
 
     void Start()
@@ -295,13 +321,15 @@ public class PlanetGenerator : MonoBehaviour
             platformsLeft -= 1;
 
             var newPlatform = Instantiate(PlatformPrefab);
-            newPlatform.transform.position = randPoint;
+            newPlatform.transform.position = randPoint + randPoint.normalized * 1f;
             newPlatform.GetComponent<SurfaceAlign>().PlanetReference = PlanetReference;
 
             newPlatform.GetComponent<PlatformController>().GeneratorReference = this;
             newPlatform.GetComponent<PlatformController>().PlayerReference = PlayerReference;
 
             newPlatform.GetComponent<PlatformController>().GenerateContent();
+
+            newPlatform.GetComponent<PlatformController>().Regenerate = RegeneratePlatforms;
 
             newPlatform.transform.parent = PlatformsReference.transform;
 
@@ -367,9 +395,68 @@ public class PlanetGenerator : MonoBehaviour
         }
     }
     
-    void Update() 
+    void Update()
     {
-    
+        // Regenerate choppers if needed
+        if (!RegenerateChoppers) return;
+
+        for (var i = 0; i < choppers.Count; ++i)
+        {
+            var chopper = choppers[i];
+
+            if (chopper == null)
+            {
+                // Try once, and again on next frame if unsuccessful
+                var potentialNewChopper = RegenerateChopper();
+
+                if (potentialNewChopper == null) continue;
+
+                choppers[i] = potentialNewChopper;
+            }
+        }
+    }
+
+    private GameObject RegenerateChopper()
+    {
+        // Draw random point on the sphere, cast it to the surface
+        var randPoint = Random.onUnitSphere;
+
+        randPoint *= 300f; // Far enough away from the center
+        Ray ray = new Ray(randPoint, -randPoint);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 1000f, PlatformLayerMask))
+        {
+            randPoint = hit.point;
+        }
+
+        // Test if there is anything bad nearby 
+        // Do not spawn near player spawn
+        if (Vector3.Distance(randPoint, SpawnZoneReference.transform.position) < SpawnZoneSafeDistance)
+        {
+            return null;
+        }
+
+        // Spherecast
+        var colliders = Physics.OverlapSphere(randPoint, ChopperSpawnSafeDistance, ChopperLayerMask, QueryTriggerInteraction.Collide);
+
+        if (colliders.Length > 0)
+        {
+            return null;
+        }
+
+        // Successfull spawn
+        var newChopper = Instantiate(ChopperPrefab);
+        newChopper.transform.position = randPoint + randPoint.normalized * 25f;
+
+        var randomParallelVector = Vector3.ProjectOnPlane(Random.onUnitSphere, randPoint).normalized;
+
+        newChopper.transform.rotation = Quaternion.LookRotation(randomParallelVector, randPoint);
+
+        newChopper.GetComponent<ChopperController>().PlanetReference = PlanetReference;
+        newChopper.GetComponent<ChopperController>().PlayerReference = PlayerReference;
+
+        return newChopper;
     }
 
     public GameObject GetRandomPlatform()

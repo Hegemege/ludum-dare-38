@@ -8,6 +8,7 @@ public class PlatformController : MonoBehaviour
 
     // When the player hits the loose collider, this platform will regenerate it's contents when the player is on the opposite side of the planet
     public bool Triggered;
+    public bool Regenerate;
 
     private GameObject content;
 
@@ -23,6 +24,8 @@ public class PlatformController : MonoBehaviour
     
     void Update()
     {
+        if (!Regenerate) return;
+
         Vector3 towardsPlayer = PlayerReference.transform.position - transform.position;
 
         if (Triggered && content.GetComponent<PlatformContent>().IsDone)

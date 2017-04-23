@@ -117,6 +117,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!Alive)
         {
+            /*
             foreach (var part in DestructionParts)
             {
                 if (!part)
@@ -138,6 +139,7 @@ public class PlayerController : MonoBehaviour
             if (float.IsNaN(averagePosition.x)) averagePosition = DestructionPoint;
 
             transform.position = (averagePosition + DestructionPoint) / 2f;
+            */        
             return;
         }
 
@@ -288,6 +290,9 @@ public class PlayerController : MonoBehaviour
             col.tag = "Untagged";
             col.enabled = false;
         }
+
+        // Disable dropmarker
+        DropMarker.SetActive(false);
 
         // Disable particle system
         var particleSystems = ParticleEffects.GetComponentsInChildren<ParticleSystem>();
