@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEditor;
+using UnityEngine.SceneManagement;
 
 public class GameState : MonoBehaviour 
 {
@@ -31,29 +33,70 @@ public class GameState : MonoBehaviour
     public int ChoppersDestroyed;
     public int MaxChoppers;
 
-    void Awake() 
+    public bool AdvancingToNextLevel;
+    public bool StartingNewLevel;
+
+    public bool EndLevel;
+
+    public bool Paused;
+
+    public bool EndingLevel;
+
+    void Awake()
     {
         // Singleton
         if (instance == null)
         {
             instance = this;
+            SetupNewLevel();
         }
         else if (!instance.Equals(this))
         {
+            SetupNewLevel();
             Destroy(gameObject);
             return;
         }
         DontDestroyOnLoad(gameObject);
     }
     
-    void Start() 
+    void Start()
     {
-        
+        StartingNewLevel = true;
     }
     
-    void Update() 
+    void Update()
     {
-        
+        if (Paused) return;
+
+        // Advance to next level
+        if (PickedMarkers == MaxMarkers && !LevelRegenerateBuildings[EffectiveLevelIndex])
+        {
+            AdvancingToNextLevel = true;
+        }
+
+        if (EndLevel)
+        {
+            NewLevel();
+        }
+    }
+
+    public void SetupNewLevel()
+    {
+        instance.MaxMarkers = 0;
+        instance.MaxChoppers = 0;
+        instance.PickedMarkers = 0;
+        instance.ChoppersDestroyed = 0;
+
+        instance.AdvancingToNextLevel = false;
+        instance.StartingNewLevel = true;
+        instance.EndLevel = false;
+
+        instance.EndingLevel = false;
+    }
+
+    private bool DidWin()
+    {
+        return PickedMarkers == MaxMarkers;
     }
 
     /// <summary>
@@ -61,10 +104,15 @@ public class GameState : MonoBehaviour
     /// </summary>
     public void NewLevel()
     {
-        // TODO: Get max totals?
-        MaxMarkers = 0;
-        MaxChoppers = 0;
-        PickedMarkers = 0;
-        ChoppersDestroyed = 0;
+        if (EndingLevel) return;
+
+        if (DidWin())
+        {
+            LevelIndex += 1;
+        }
+
+        EndingLevel = true;
+
+        SceneManager.LoadSceneAsync("Main");
     }
 }

@@ -48,6 +48,14 @@ public class PlayerController : MonoBehaviour
     [HideInInspector]
     public bool Alive;
 
+    public float NextLevelAscentRate;
+    public float SpawnHeight;
+    public float SpawnDescentRate;
+    public float EndHeight;
+    private float effectiveDistanceFromGround;
+
+    private bool endingLevel;
+
     // Privates
     private Quaternion modelRotationTarget;
     private Vector3 targetVelocity;
@@ -85,7 +93,9 @@ public class PlayerController : MonoBehaviour
         // Move the player to be at the correct height
         var groundPoint = GroundPosition(transform.position);
         var planetToGround = (groundPoint - PlanetReference.transform.position).normalized;
-        transform.position = groundPoint + planetToGround * DistanceFromGround;
+        transform.position = groundPoint + planetToGround * SpawnHeight;
+
+        effectiveDistanceFromGround = SpawnHeight;
     }
 
     void Update()
@@ -100,6 +110,9 @@ public class PlayerController : MonoBehaviour
         // Boost/brake handling
         Boosting = false;
         Braking = false;
+
+        if (GameState.instance.AdvancingToNextLevel || GameState.instance.StartingNewLevel) return;
+
         if (Mathf.Abs(VerticalInput) > InputDeadzone)
         {
             if (VerticalInput < 0)
@@ -115,6 +128,8 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (GameState.instance.Paused) return;
+
         if (!Alive)
         {
             /*
@@ -139,7 +154,14 @@ public class PlayerController : MonoBehaviour
             if (float.IsNaN(averagePosition.x)) averagePosition = DestructionPoint;
 
             transform.position = (averagePosition + DestructionPoint) / 2f;
-            */        
+            */
+            if (!endingLevel)
+            {
+                endingLevel = true;
+                var coroutine = EndLevelInSeconds(3f);
+                StartCoroutine(coroutine);
+            }
+            
             return;
         }
 
@@ -150,13 +172,51 @@ public class PlayerController : MonoBehaviour
         // Input
         var newForward = Velocity.normalized;
 
+        var horizontalInput = HorizontalInput;
+        var verticalInput = VerticalInput;
+
+        // If spawning to new level, block input
+        if (GameState.instance.StartingNewLevel)
+        {
+            horizontalInput = 0f;
+            verticalInput = 0f;
+
+            effectiveDistanceFromGround -= dt * SpawnDescentRate;
+        }
+
+        // Enable input when player reaches altitude
+        if (effectiveDistanceFromGround < DistanceFromGround)
+        {
+            GameState.instance.StartingNewLevel = false;
+            effectiveDistanceFromGround = DistanceFromGround;
+        }
+
+        // If advancing to next level, block input
+        if (GameState.instance.AdvancingToNextLevel)
+        {
+            horizontalInput = 0f;
+            verticalInput = 0f;
+
+            // Updates the height to ground, makes the player rise into the air
+            effectiveDistanceFromGround += dt * NextLevelAscentRate;
+        }
+
+        // If reached altitude, end level
+        if (GameState.instance.AdvancingToNextLevel)
+        {
+            if (effectiveDistanceFromGround > EndHeight)
+            {
+                GameState.instance.EndLevel = true;
+            }
+        }
+
         // Turning
-        newForward = Quaternion.AngleAxis(HorizontalInput * TurningSpeed * dt, -towardsPlanet) * newForward;
+        newForward = Quaternion.AngleAxis(horizontalInput * TurningSpeed * dt, -towardsPlanet) * newForward;
 
         // Air speed calculations
         var effectiveAirspeed = Airspeed;
-        if (Boosting) effectiveAirspeed += Airspeed * BoostScale * Mathf.Abs(VerticalInput);
-        if (Braking) effectiveAirspeed += Airspeed * BrakeScale * Mathf.Abs(VerticalInput);
+        if (Boosting) effectiveAirspeed += Airspeed * BoostScale * Mathf.Abs(verticalInput);
+        if (Braking) effectiveAirspeed += Airspeed * BrakeScale * Mathf.Abs(verticalInput);
 
         var newVelocity = Velocity + newForward * effectiveAirspeed;
 
@@ -164,7 +224,7 @@ public class PlayerController : MonoBehaviour
         Vector3 groundPoint = GroundPosition(transform.position + newVelocity * dt);
         var planetToGround = (groundPoint - PlanetReference.transform.position).normalized;
 
-        var normalizedTarget = groundPoint + planetToGround * DistanceFromGround;
+        var normalizedTarget = groundPoint + planetToGround * effectiveDistanceFromGround;
         var normalizedVelocity = normalizedTarget - transform.position;
 
         // TEMP
@@ -183,7 +243,7 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(Velocity, -towardsPlanet);
 
         // Rotate the player model when turning
-        var turning = TurningAngle * -HorizontalInput;
+        var turning = TurningAngle * -horizontalInput;
         modelRotationTarget = Quaternion.AngleAxis(turning, Vector3.forward);
         ModelReference.transform.localRotation = Quaternion.Slerp(ModelReference.transform.localRotation, modelRotationTarget, TurningSmoothing);
     }
@@ -303,5 +363,12 @@ public class PlayerController : MonoBehaviour
             em.rateOverTime = 0f;
             Destroy(ps, ps.main.startLifetime.constant);
         }
+    }
+
+    IEnumerator EndLevelInSeconds(float sec)
+    {
+        yield return new WaitForSeconds(sec);
+
+        GameState.instance.EndLevel = true;
     }
 }

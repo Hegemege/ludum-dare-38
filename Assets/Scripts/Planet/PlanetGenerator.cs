@@ -84,10 +84,20 @@ public class PlanetGenerator : MonoBehaviour
 
     void Start()
     {
+        GameState.instance.Paused = true;
+        StartCoroutine(GenerateAll());
+    }
+
+    private IEnumerator GenerateAll()
+    {
+        yield return new WaitForSeconds(0.1f);
+
         DeformPlanet();
         GenerateTerrain();
         GeneratePlatforms();
         GenerateChoppers();
+
+        GameState.instance.Paused = false;
     }
 
     /// <summary>
