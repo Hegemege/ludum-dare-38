@@ -11,6 +11,8 @@ public class GoalMarkerController : MonoBehaviour
     public float BobbingDistance;
     private float bobTimer;
 
+    public GameObject ParentFarm;
+
     void Awake() 
     {
 
@@ -47,6 +49,8 @@ public class GoalMarkerController : MonoBehaviour
             PickupAudio.Play();
 
             Destroy(PickupAudio, 1f);
+
+            ParentFarm.GetComponent<PlatformFarm>().IsDone = true;
 
             Destroy(gameObject);
         }

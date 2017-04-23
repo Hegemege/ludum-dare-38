@@ -69,9 +69,11 @@ public class PlatformController : MonoBehaviour
 
             var marker = Instantiate(MarkerPrefab);
 
-            marker.transform.parent = gameObject.transform;
+            marker.transform.parent = content.transform;
             marker.transform.localRotation = Quaternion.identity;
             marker.transform.localPosition = Vector3.up * 12f;
+
+            marker.GetComponent<GoalMarkerController>().ParentFarm = content;
         }
     }
 }
