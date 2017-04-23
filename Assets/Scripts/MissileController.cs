@@ -94,14 +94,37 @@ public class MissileController : MonoBehaviour
             other.gameObject.CompareTag("Player") ||
             other.gameObject.CompareTag("Missile"))
         {
-            var explosion = Instantiate(ExplosionPrefab);
-            explosion.transform.position = transform.position;
-            explosion.transform.rotation = transform.rotation;
+            if (other.gameObject.CompareTag("Chopper"))
+            {
+                other.gameObject.transform.root.GetComponent<ChopperController>().Explode();
+            }
 
-            Destroy(gameObject);
+            if (other.gameObject.CompareTag("Missile"))
+            {
+                other.gameObject.transform.root.GetComponent<MissileController>().Explode();
+            }
+
+            if (other.gameObject.CompareTag("Player"))
+            {
+                other.gameObject.transform.root.GetComponent<PlayerController>().Explode();
+            }
+
+            Explode();
         }
     }
 
+    public void Explode()
+    {
+        if (!Alive) return;
+
+        Alive = false;
+
+        var explosion = Instantiate(ExplosionPrefab);
+        explosion.transform.position = transform.position;
+        explosion.transform.rotation = transform.rotation;
+
+        Destroy(gameObject);
+    }
 
     /// <summary>
     /// Returns the distance to ground at current location

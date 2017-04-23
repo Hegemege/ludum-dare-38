@@ -209,6 +209,21 @@ public class ChopperController : MonoBehaviour
             other.gameObject.CompareTag("Player") || 
             other.gameObject.CompareTag("Missile"))
         {
+            if (other.gameObject.CompareTag("Chopper"))
+            {
+                other.gameObject.transform.root.GetComponent<ChopperController>().Explode();
+            }
+
+            if (other.gameObject.CompareTag("Missile"))
+            {
+                other.gameObject.transform.root.GetComponent<MissileController>().Explode();
+            }
+
+            if (other.gameObject.CompareTag("Player"))
+            {
+                other.gameObject.transform.root.GetComponent<PlayerController>().Explode();
+            }
+
             Explode();
         }
 
@@ -246,6 +261,8 @@ public class ChopperController : MonoBehaviour
     /// </summary>
     public void Explode()
     {
+        if (!Alive) return;
+
         // Unparent all objects in the model
         DestructionParts = new List<GameObject>();
         DestructionParts.AddRange(ModelReference.GetComponentsInChildren<MeshRenderer>().Select(t => t.gameObject));
@@ -271,7 +288,7 @@ public class ChopperController : MonoBehaviour
             rb.angularDrag = 0.01f;
             rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
-            var randomStartForce = Velocity/5f + Random.onUnitSphere * 2f;
+            var randomStartForce = Velocity/5f + Random.onUnitSphere * 5f;
             var randomStartTorque = Random.onUnitSphere * 10f;
 
             rb.AddForce(randomStartForce, ForceMode.Impulse);

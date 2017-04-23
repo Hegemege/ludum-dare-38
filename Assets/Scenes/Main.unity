@@ -128,7 +128,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4957486564822566, guid: 37ca1e5eed6e07741a2dae2d4012b516, type: 2}
       propertyPath: m_RootOrder
-      value: 9
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 114129474797317404, guid: 37ca1e5eed6e07741a2dae2d4012b516,
         type: 2}
@@ -227,56 +227,8 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &337396964
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 337396965}
-  - component: {fileID: 337396966}
-  m_Layer: 0
-  m_Name: Mountain
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &337396965
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 337396964}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.027092, y: 72.5, z: 0.041567802}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &337396966
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 337396964}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0c163d71ad8926489e28205af85d52b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MountainBlockPrefab: {fileID: 1494658648544902, guid: 4f8af8bf426e23045b8ff766e987c664,
-    type: 2}
-  RandomMaterials:
-  - {fileID: 2100000, guid: ca9c6e926c9967b4291b8d2f7d102d25, type: 2}
-  - {fileID: 2100000, guid: 87e8f42b647ce6d49bd930f6c36b9932, type: 2}
-  - {fileID: 2100000, guid: 3a43a39bff724fa4a93720fca0e3ca0a, type: 2}
-  MountainBlockCount: 3
-  RandomOffset: 5
 --- !u!1 &338290213
 GameObject:
   m_ObjectHideFlags: 0
@@ -306,6 +258,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlanetReference: {fileID: 609425024}
   TerrainReference: {fileID: 1943514596}
+  MountainPrefab: {fileID: 1321487728694952, guid: 3606d8127f5cca34387c63f79c1692bb,
+    type: 2}
   PlatformsReference: {fileID: 1691712226}
   PlatformPrefab: {fileID: 1688186614372336, guid: 139ecebef47f8af47acdfbf5a37e322c,
     type: 2}
@@ -332,6 +286,8 @@ MonoBehaviour:
   PlatformCount: 50
   DistanceBetweenPlatforms: 20
   MaxTries: 100
+  MountainCount: 5
+  DistanceBetweenMountains: 50
 --- !u!4 &338290215
 Transform:
   m_ObjectHideFlags: 0
@@ -387,7 +343,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4585276212969704, guid: d5ebf31b5fff38846ad2fd6ac1310619, type: 2}
       propertyPath: m_RootOrder
-      value: 11
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 114913567689089838, guid: d5ebf31b5fff38846ad2fd6ac1310619,
         type: 2}
@@ -463,7 +419,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4009258618928572, guid: 2732d26906177bd499318f095c298b2c, type: 2}
       propertyPath: m_RootOrder
-      value: 13
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 114156852156376448, guid: 2732d26906177bd499318f095c298b2c,
         type: 2}
@@ -519,7 +475,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4009258618928572, guid: 2732d26906177bd499318f095c298b2c, type: 2}
       propertyPath: m_RootOrder
-      value: 12
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 114156852156376448, guid: 2732d26906177bd499318f095c298b2c,
         type: 2}
@@ -600,7 +556,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &1125935661
 GameObject:
@@ -689,7 +645,7 @@ Transform:
   m_Children:
   - {fileID: 1307220326}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1125935667
 MonoBehaviour:
@@ -745,7 +701,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1307220325
 GameObject:
@@ -841,7 +797,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1691712226
 GameObject:
@@ -869,7 +825,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1876425580 stripped
 GameObject:
@@ -916,7 +872,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2051941267
 Prefab:
@@ -955,7 +911,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4205916618011374, guid: a95ca02677442ce4e99f3c826c756651, type: 2}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 23993370820917658, guid: a95ca02677442ce4e99f3c826c756651,
         type: 2}

@@ -7,6 +7,7 @@ public class PlanetGenerator : MonoBehaviour
 {
     public GameObject PlanetReference;
     public GameObject TerrainReference;
+    public GameObject MountainPrefab;
     public GameObject PlatformsReference;
 
     public GameObject PlatformPrefab;
@@ -22,12 +23,17 @@ public class PlanetGenerator : MonoBehaviour
     public float DistanceBetweenPlatforms;
     public int MaxTries;
 
+    public int MountainCount;
+    public float DistanceBetweenMountains;
+
     // Privates
     private List<GameObject> platforms;
+    private List<GameObject> mountains;
 
     void Awake() 
     {
         platforms = new List<GameObject>();
+        mountains = new List<GameObject>();
     }
 
     void Start()
@@ -172,7 +178,54 @@ public class PlanetGenerator : MonoBehaviour
     /// </summary>
     private void GenerateTerrain()
     {
+        var triedToGenerate = 0;
+        var mountainsLeft = MountainCount;
 
+        while (mountainsLeft > 0)
+        {
+            // Can't generate any more
+            if (triedToGenerate >= MaxTries) break;
+
+            // Draw random point, cast it to the surface
+            var randPoint = Random.onUnitSphere;
+
+            randPoint *= 300f; // Far enough away from the center
+            Ray ray = new Ray(randPoint, -randPoint);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 1000f, PlatformLayerMask))
+            {
+                randPoint = hit.point;
+            }
+
+
+            // Test if there are mountains
+            var regenerate = false;
+            foreach (var mmountain in mountains)
+            {
+                if (Vector3.Distance(mmountain.transform.position, randPoint) < DistanceBetweenMountains)
+                {
+                    regenerate = true;
+                    triedToGenerate += 1;
+                    break;
+                }
+            }
+
+            if (regenerate) continue;
+
+            // Create the prefab
+            triedToGenerate = 0;
+            mountainsLeft -= 1;
+
+            var newMountain = Instantiate(MountainPrefab);
+            newMountain.transform.position = randPoint + 2.5f * -randPoint.normalized;
+            newMountain.GetComponent<SurfaceAlign>().PlanetReference = PlanetReference;
+            newMountain.GetComponent<MountainGenerator>().MountainBlockCount = Random.Range(4, 6);
+
+            newMountain.transform.parent = TerrainReference.transform;
+
+            mountains.Add(newMountain);
+        }
     }
 
     /// <summary>
