@@ -179,7 +179,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GeneratorReference: {fileID: 0}
   PlayerReference: {fileID: 0}
+  MarkerPrefab: {fileID: 1003444217823342, guid: 1a1f202762730ba49ac666f8b591b32c,
+    type: 2}
   Triggered: 0
+  Regenerate: 0
 --- !u!136 &136464109329858126
 CapsuleCollider:
   m_ObjectHideFlags: 1

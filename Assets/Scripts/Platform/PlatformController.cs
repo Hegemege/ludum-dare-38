@@ -6,6 +6,8 @@ public class PlatformController : MonoBehaviour
     public PlanetGenerator GeneratorReference;
     public GameObject PlayerReference;
 
+    public GameObject MarkerPrefab;
+
     // When the player hits the loose collider, this platform will regenerate it's contents when the player is on the opposite side of the planet
     public bool Triggered;
     public bool Regenerate;
@@ -56,5 +58,15 @@ public class PlatformController : MonoBehaviour
         content.transform.parent = transform;
 
         Triggered = false;
+
+        // Generate the marker for farms
+        if (content.gameObject.CompareTag("Farm"))
+        {
+            var marker = Instantiate(MarkerPrefab);
+
+            marker.transform.parent = gameObject.transform;
+            marker.transform.localRotation = Quaternion.identity;
+            marker.transform.localPosition = Vector3.up * 12f;
+        }
     }
 }

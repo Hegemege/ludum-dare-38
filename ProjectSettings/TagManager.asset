@@ -10,6 +10,8 @@ TagManager:
   - Missile
   - ChopperAvoid
   - PlatformLooseTrigger
+  - GoalMarker
+  - Farm
   layers:
   - Default
   - TransparentFX
@@ -24,7 +26,7 @@ TagManager:
   - DropMarker
   - Debris
   - ChopperAvoid
-  - 
+  - GoalMarker
   - 
   - 
   - 

@@ -25,6 +25,10 @@ public class GameState : MonoBehaviour
     public bool[] LevelRegenerateBuildings;
     public bool[] LevelRegenerateChoppers;
 
+    // Progress stats
+    public int PickedFarms;
+    public int ChoppersDestroyed;
+
     void Awake() 
     {
         // Singleton
