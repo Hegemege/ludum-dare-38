@@ -9,6 +9,8 @@ public class MissileController : MonoBehaviour
     public GameObject PlanetReference;
     public GameObject ExplosionPrefab;
 
+    public AudioSource ExplosionAudio;
+
     // Physics parameters
     public float Airspeed;
     public float TurningSpeed;
@@ -137,6 +139,9 @@ public class MissileController : MonoBehaviour
         if (!Alive) return;
 
         Alive = false;
+        ExplosionAudio.Play();
+        ExplosionAudio.transform.parent = null;
+        Destroy(ExplosionAudio, 3f);
 
         var explosion = Instantiate(ExplosionPrefab);
         explosion.transform.position = transform.position;

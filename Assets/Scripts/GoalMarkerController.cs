@@ -3,6 +3,8 @@ using System.Collections;
 
 public class GoalMarkerController : MonoBehaviour
 {
+    public AudioSource PickupAudio;
+
     private Vector3 startLocalPosition;
 
     public float BobbingSpeed;
@@ -41,7 +43,10 @@ public class GoalMarkerController : MonoBehaviour
         {
             GameState.instance.PickedMarkers += 1;
 
-            // TODO: sound effect
+            PickupAudio.transform.parent = null;
+            PickupAudio.Play();
+
+            Destroy(PickupAudio, 1f);
 
             Destroy(gameObject);
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using UnityEditor;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,6 +20,12 @@ public class PlayerController : MonoBehaviour
     public GameObject ParticleEffects;
     public float TurningSmoothing;
     public float TurningAngle;
+
+    public AudioSource DestroyAudio;
+    public AudioSource MotorAudio;
+    public float StartAudioPitch;
+    public float BoostAudioPitch;
+    public float BrakeAudioPitch;
 
     // Input
     public float InputDeadzone;
@@ -83,6 +90,7 @@ public class PlayerController : MonoBehaviour
     void Awake() 
     {
         Alive = true;
+        MotorAudio.pitch = StartAudioPitch;
     }
 
     void Start()
@@ -209,6 +217,20 @@ public class PlayerController : MonoBehaviour
             {
                 GameState.instance.EndLevel = true;
             }
+        }
+
+        // Audio stuff
+        if (Braking)
+        {
+            MotorAudio.pitch = Mathf.Lerp(MotorAudio.pitch, BrakeAudioPitch, 0.1f);
+        }
+        else if (Boosting)
+        {
+            MotorAudio.pitch = Mathf.Lerp(MotorAudio.pitch, BoostAudioPitch, 0.1f);
+        }
+        else
+        {
+            MotorAudio.pitch = Mathf.Lerp(MotorAudio.pitch, StartAudioPitch, 0.1f);
         }
 
         // Turning
@@ -364,6 +386,9 @@ public class PlayerController : MonoBehaviour
             em.rateOverTime = 0f;
             Destroy(ps, ps.main.startLifetime.constant);
         }
+
+        MotorAudio.Stop();
+        DestroyAudio.Play();
     }
 
     IEnumerator EndLevelInSeconds(float sec)

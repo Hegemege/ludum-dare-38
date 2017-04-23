@@ -12,6 +12,7 @@ public class ChopperController : MonoBehaviour
     public GameObject ExplosionPrefab;
 
     // Self-references
+    public AudioSource ExplosionAudio;
     public GameObject ModelReference;
     public float TurningSmoothing;
     public float TurningAngle;
@@ -321,6 +322,10 @@ public class ChopperController : MonoBehaviour
         var explosion = Instantiate(ExplosionPrefab);
         explosion.transform.position = transform.position;
         explosion.transform.rotation = transform.rotation;
+
+        ExplosionAudio.Play();
+        ExplosionAudio.transform.parent = null;
+        Destroy(ExplosionAudio, 3f);
 
         Destroy(gameObject);
     }
