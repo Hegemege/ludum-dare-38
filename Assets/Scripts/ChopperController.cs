@@ -63,7 +63,7 @@ public class ChopperController : MonoBehaviour
     void Start() 
     {
         // Initialize velocity as forward
-        Velocity = Airspeed * new Vector3(0f, 0f, 1f) * Time.fixedDeltaTime;
+        Velocity = Airspeed * transform.forward * Time.fixedDeltaTime;
 
         for (var i = 0; i < VelocityHistory.Length; ++i)
         {

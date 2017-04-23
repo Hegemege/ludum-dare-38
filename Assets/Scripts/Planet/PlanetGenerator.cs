@@ -12,6 +12,7 @@ public class PlanetGenerator : MonoBehaviour
     public GameObject PlayerReference;
     public GameObject SpawnZoneReference;
     public float SpawnZoneSafeDistance;
+    public GameObject ChopperPrefab;
 
     public GameObject[] PlatformContentPrefabs;
     public int[] PlatformContentWeights;
@@ -20,6 +21,7 @@ public class PlanetGenerator : MonoBehaviour
     public GameObject PlatformPrefab;
 
     public LayerMask PlatformLayerMask;
+    public LayerMask ChopperLayerMask;
 
     public float PlanetDeformScale;
     public int PlanetDeformRuns;
@@ -33,14 +35,19 @@ public class PlanetGenerator : MonoBehaviour
     public int MountainCount;
     public float DistanceBetweenMountains;
 
+    public int ChopperCount;
+    public float ChopperSpawnSafeDistance;
+
     // Privates
     private List<GameObject> platforms;
     private List<GameObject> mountains;
+    private List<GameObject> choppers;
 
     void Awake() 
     {
         platforms = new List<GameObject>();
         mountains = new List<GameObject>();
+        choppers = new List<GameObject>();
 
         PlatformContentDict = new Dictionary<GameObject, int>();
         for (var i = 0; i < PlatformContentPrefabs.Length; ++i)
@@ -54,6 +61,7 @@ public class PlanetGenerator : MonoBehaviour
         DeformPlanet();
         GenerateTerrain();
         GeneratePlatforms();
+        GenerateChoppers();
     }
 
     /// <summary>
@@ -293,9 +301,69 @@ public class PlanetGenerator : MonoBehaviour
             newPlatform.GetComponent<PlatformController>().GeneratorReference = this;
             newPlatform.GetComponent<PlatformController>().PlayerReference = PlayerReference;
 
+            newPlatform.GetComponent<PlatformController>().GenerateContent();
+
             newPlatform.transform.parent = PlatformsReference.transform;
 
             platforms.Add(newPlatform);
+        }
+    }
+
+    private void GenerateChoppers()
+    {
+        var triedToGenerate = 0;
+        var choppersLeft = ChopperCount;
+
+        while (choppersLeft > 0)
+        {
+            // Can't generate any more
+            if (triedToGenerate >= MaxTries) break;
+
+            // Draw random point on the sphere, cast it to the surface
+            var randPoint = Random.onUnitSphere;
+
+            randPoint *= 300f; // Far enough away from the center
+            Ray ray = new Ray(randPoint, -randPoint);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 1000f, PlatformLayerMask))
+            {
+                randPoint = hit.point;
+            }
+
+            // Test if there is anything bad nearby 
+
+            // Do not spawn near player spawn
+            if (Vector3.Distance(randPoint, SpawnZoneReference.transform.position) < SpawnZoneSafeDistance)
+            {
+                triedToGenerate += 1;
+                continue;
+            }
+
+            // Spherecast
+            var colliders = Physics.OverlapSphere(randPoint, ChopperSpawnSafeDistance, ChopperLayerMask, QueryTriggerInteraction.Collide);
+
+            if (colliders.Length > 0)
+            {
+                triedToGenerate += 1;
+                continue;
+            }
+
+            // Create the prefab
+            triedToGenerate = 0;
+            choppersLeft -= 1;
+
+            var newChopper = Instantiate(ChopperPrefab);
+            newChopper.transform.position = randPoint + randPoint.normalized * 25f;
+
+            var randomParallelVector = Vector3.ProjectOnPlane(Random.onUnitSphere, randPoint).normalized;
+
+            newChopper.transform.rotation = Quaternion.LookRotation(randomParallelVector, randPoint);
+
+            newChopper.GetComponent<ChopperController>().PlanetReference = PlanetReference;
+            newChopper.GetComponent<ChopperController>().PlayerReference = PlayerReference;
+
+            choppers.Add(newChopper);
         }
     }
     

@@ -264,6 +264,8 @@ MonoBehaviour:
   PlayerReference: {fileID: 417841622}
   SpawnZoneReference: {fileID: 1250519084}
   SpawnZoneSafeDistance: 45
+  ChopperPrefab: {fileID: 1710357876638916, guid: 2732d26906177bd499318f095c298b2c,
+    type: 2}
   PlatformContentPrefabs:
   - {fileID: 1172813104081128, guid: a25b361cea8510943a79ff2c6e4f38fe, type: 2}
   - {fileID: 1725771810969462, guid: 8e2d9c6a059975543b95d1a98a92647e, type: 2}
@@ -274,6 +276,9 @@ MonoBehaviour:
   PlatformLayerMask:
     serializedVersion: 2
     m_Bits: 512
+  ChopperLayerMask:
+    serializedVersion: 2
+    m_Bits: 4096
   PlanetDeformScale: 0.00002
   PlanetDeformRuns: 1500
   PlanetTerrainColors:
@@ -296,6 +301,8 @@ MonoBehaviour:
   MaxTries: 100
   MountainCount: 5
   DistanceBetweenMountains: 50
+  ChopperCount: 20
+  ChopperSpawnSafeDistance: 30
 --- !u!4 &338290215
 Transform:
   m_ObjectHideFlags: 0
@@ -499,6 +506,10 @@ Prefab:
       propertyPath: PlayerReference
       value: 
       objectReference: {fileID: 417841622}
+    - target: {fileID: 1710357876638916, guid: 2732d26906177bd499318f095c298b2c, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2732d26906177bd499318f095c298b2c, type: 2}
   m_IsPrefabParent: 0

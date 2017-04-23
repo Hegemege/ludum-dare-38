@@ -13,12 +13,12 @@ public class PlatformController : MonoBehaviour
 
     void Awake()
     {
-        
+
     }
 
     void Start() 
     {
-        GenerateContent();
+        
     }
     
     void Update()
@@ -35,7 +35,7 @@ public class PlatformController : MonoBehaviour
         }
     }
 
-    private void GenerateContent()
+    public void GenerateContent()
     {
         var contentPrefab = GeneratorReference.GetRandomPlatform();
 
