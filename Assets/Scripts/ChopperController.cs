@@ -99,11 +99,11 @@ public class ChopperController : MonoBehaviour
         // If player is relative to the left, bank left etc
         Vector3 towardsPlayer = PlayerReference.transform.position - transform.position;
         Vector3 towardsPlayerNormalized = Vector3.ProjectOnPlane(towardsPlayer, -towardsPlanet);
-        HorizontalInput = Mathf.Clamp(Vector3.Dot(towardsPlayerNormalized, transform.right) * 2, -1f, 1f);
+        HorizontalInput = Mathf.Clamp(Vector3.Dot(towardsPlayerNormalized.normalized, transform.right) * 2, -1f, 1f);
 
         // If player is too close, and behind us, bank the opposite way
         if (playerDistance < PlayerFollowDistance && 
-            Vector3.Dot(towardsPlayerNormalized, transform.forward) < 0)
+            Vector3.Dot(towardsPlayerNormalized.normalized, transform.forward) < 0)
         {
             HorizontalInput *= -1;
         }
@@ -119,7 +119,7 @@ public class ChopperController : MonoBehaviour
             {
                 var towardsAvoid = avoidTarget.transform.position - transform.position;
                 var towardsAvoidNormalized = Vector3.ProjectOnPlane(towardsAvoid, -towardsPlanet);
-                HorizontalInput = -Mathf.Clamp(Vector3.Dot(towardsAvoidNormalized, transform.right) * 2, -1f, 1f);
+                HorizontalInput = -Mathf.Clamp(Vector3.Dot(towardsAvoidNormalized.normalized, transform.right) * 2, -1f, 1f);
             }
         }
 
@@ -195,7 +195,7 @@ public class ChopperController : MonoBehaviour
 
         if (fireTimer > FireInterval && 
             playerDistance < PlayerFireDistance &&
-            Vector3.Dot(towardsPlayerNormalized, transform.forward) > FireConeAngle)
+            Vector3.Dot(towardsPlayerNormalized.normalized, transform.forward) > FireConeAngle)
         {
             fireTimer = 0f;
             FireMissile();

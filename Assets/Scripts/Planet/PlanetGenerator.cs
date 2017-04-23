@@ -9,6 +9,13 @@ public class PlanetGenerator : MonoBehaviour
     public GameObject TerrainReference;
     public GameObject MountainPrefab;
     public GameObject PlatformsReference;
+    public GameObject PlayerReference;
+    public GameObject SpawnZoneReference;
+    public float SpawnZoneSafeDistance;
+
+    public GameObject[] PlatformContentPrefabs;
+    public int[] PlatformContentWeights;
+    private Dictionary<GameObject, int> PlatformContentDict;
 
     public GameObject PlatformPrefab;
 
@@ -34,6 +41,12 @@ public class PlanetGenerator : MonoBehaviour
     {
         platforms = new List<GameObject>();
         mountains = new List<GameObject>();
+
+        PlatformContentDict = new Dictionary<GameObject, int>();
+        for (var i = 0; i < PlatformContentPrefabs.Length; ++i)
+        {
+            PlatformContentDict[PlatformContentPrefabs[i]] = PlatformContentWeights[i];
+        }
     }
 
     void Start()
@@ -64,7 +77,7 @@ public class PlanetGenerator : MonoBehaviour
             
             for (int i = 0; i < originalVertices.Length; ++i)
             {
-                var side = Mathf.Ceil(Vector3.Dot(deformedVertices[i], randomPlane)) * 2 - 1;
+                var side = Mathf.Ceil(Vector3.Dot(deformedVertices[i].normalized, randomPlane)) * 2 - 1;
 
                 var towardsCenter = (PlanetReference.transform.position - originalVertices[i]).normalized;
                 deformedVertices[i] += towardsCenter * side * PlanetDeformScale;
@@ -203,7 +216,8 @@ public class PlanetGenerator : MonoBehaviour
             var regenerate = false;
             foreach (var mmountain in mountains)
             {
-                if (Vector3.Distance(mmountain.transform.position, randPoint) < DistanceBetweenMountains)
+                if (Vector3.Distance(mmountain.transform.position, randPoint) < DistanceBetweenMountains ||
+                    Vector3.Distance(SpawnZoneReference.transform.position, randPoint) < SpawnZoneSafeDistance)
                 {
                     regenerate = true;
                     triedToGenerate += 1;
@@ -253,12 +267,12 @@ public class PlanetGenerator : MonoBehaviour
                 randPoint = hit.point;
             }
 
-
             // Test if there are platofrms nearby 
             var regenerate = false;
             foreach (var platform in platforms)
             {
-                if (Vector3.Distance(platform.transform.position, randPoint) < DistanceBetweenPlatforms)
+                if (Vector3.Distance(platform.transform.position, randPoint) < DistanceBetweenPlatforms ||
+                    Vector3.Distance(SpawnZoneReference.transform.position, randPoint) < SpawnZoneSafeDistance)
                 {
                     regenerate = true;
                     triedToGenerate += 1;
@@ -276,6 +290,9 @@ public class PlanetGenerator : MonoBehaviour
             newPlatform.transform.position = randPoint;
             newPlatform.GetComponent<SurfaceAlign>().PlanetReference = PlanetReference;
 
+            newPlatform.GetComponent<PlatformController>().GeneratorReference = this;
+            newPlatform.GetComponent<PlatformController>().PlayerReference = PlayerReference;
+
             newPlatform.transform.parent = PlatformsReference.transform;
 
             platforms.Add(newPlatform);
@@ -285,5 +302,10 @@ public class PlanetGenerator : MonoBehaviour
     void Update() 
     {
     
+    }
+
+    public GameObject GetRandomPlatform()
+    {
+        return WeightedRandomizer.From(PlatformContentDict).TakeOne();
     }
 }

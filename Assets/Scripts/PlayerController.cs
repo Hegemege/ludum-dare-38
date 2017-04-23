@@ -204,6 +204,11 @@ public class PlayerController : MonoBehaviour
 
             Explode();
         }
+
+        if (other.gameObject.CompareTag("PlatformLooseTrigger"))
+        {
+            other.gameObject.transform.parent.GetComponent<PlatformController>().Triggered = true;
+        }
     }
 
     /// <summary>

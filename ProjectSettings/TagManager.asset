@@ -9,6 +9,7 @@ TagManager:
   - Chopper
   - Missile
   - ChopperAvoid
+  - PlatformLooseTrigger
   layers:
   - Default
   - TransparentFX
