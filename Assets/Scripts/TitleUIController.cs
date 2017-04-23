@@ -33,10 +33,15 @@ public class TitleUIController : MonoBehaviour
     void Update() 
     {
 
-        if (Input.anyKey && !pressedAnyKey)
+        if (Input.anyKeyDown && !pressedAnyKey)
         {
-            pressedAnyKey = true;
-            SceneManager.LoadScene("Main");
+            if (!(Input.GetMouseButtonDown(0) ||
+                Input.GetMouseButtonDown(1) ||
+                Input.GetMouseButtonDown(2)))
+            {
+                pressedAnyKey = true;
+                SceneManager.LoadScene("Main");
+            }   
         }
 
         if (Scroll.transform.position.x < ScrollStop)

@@ -66,12 +66,13 @@ public class GameState : MonoBehaviour
     
     void Update()
     {
-        if (Input.GetAxis("Escape") > 0.1f)
+        if (Input.GetAxis("Escape") > 0.1f && SceneManager.GetActiveScene().name != "Title")
         {
-            SceneManager.LoadScene("Title");
+            SceneManager.LoadScene("Credits");
         }
 
-        if (SceneManager.GetActiveScene().ToString() == "Title")
+        // Destroy this if we are back at title
+        if (SceneManager.GetActiveScene().name == "Title")
         {
             instance = null;
             Destroy(gameObject);
@@ -117,12 +118,19 @@ public class GameState : MonoBehaviour
     {
         if (EndingLevel) return;
 
+        EndingLevel = true;
+
         if (DidWin())
         {
             LevelIndex += 1;
-        }
 
-        EndingLevel = true;
+            // Go to credits first, then allow infinite battle
+            if (LevelIndex == Levels - 1)
+            {
+                SceneManager.LoadScene("Credits");
+                return;
+            }
+        }
 
         SceneManager.LoadSceneAsync("Main");
     }

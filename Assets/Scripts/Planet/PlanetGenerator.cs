@@ -473,8 +473,8 @@ public class PlanetGenerator : MonoBehaviour
 
     public GameObject GetRandomPlatform()
     {
-        // Force farm if 0 of them
-        if (GameState.instance.MaxMarkers == 0)
+        // Force farm if less than 3 farms
+        if (GameState.instance.MaxMarkers < 3)
         {
             return PlatformContentPrefabs[1];
         }
