@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Planet
   - Obstacle
+  - Chopper
+  - Missile
   layers:
   - Default
   - TransparentFX

@@ -2,32 +2,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 
-public class PlayerController : MonoBehaviour
+public class ChopperController : MonoBehaviour 
 {
     public GameObject PlanetReference;
-    public GameObject DropMarker;
-
-    // TMEP
-    public GameObject debugSphere;
 
     // Self-references
     public GameObject ModelReference;
-    public GameObject ParticleEffects;
     public float TurningSmoothing;
     public float TurningAngle;
-
-    // Input
-    public float InputDeadzone;
 
     // Physics parameters
     public float Airspeed;
     public float TurningSpeed;
     public float VelocitySmoothing;
-
-    public float BoostScale;
-    public float BrakeScale;
 
     public float DistanceFromGround;
 
@@ -38,10 +26,7 @@ public class PlayerController : MonoBehaviour
     public Vector3 Velocity;
 
     [HideInInspector]
-    public bool Boosting;
-    
-    [HideInInspector]
-    public bool Braking;
+    public Vector3[] VelocityHistory;
 
     [HideInInspector]
     public bool Alive;
@@ -51,108 +36,48 @@ public class PlayerController : MonoBehaviour
     private Vector3 targetVelocity;
 
     private List<GameObject> DestructionParts;
-    private Vector3 DestructionPoint;
-
-    // Input
-    private float HorizontalInput
-    {
-        get
-        {
-            return Input.GetAxis("Horizontal");
-        }
-    }
-
-    private float VerticalInput
-    {
-        get
-        {
-            return Input.GetAxis("Vertical");
-        }
-    }
 
     void Awake() 
     {
         Alive = true;
     }
 
-    void Start()
+    void Start() 
     {
         // Initialize velocity as forward
         Velocity = Airspeed * new Vector3(0f, 0f, 1f) * Time.fixedDeltaTime;
 
-        // Move the player to be at the correct height
+        // Move the chopper to be at the correct height
         var groundPoint = GroundPosition(transform.position);
         var planetToGround = (groundPoint - PlanetReference.transform.position).normalized;
         transform.position = groundPoint + planetToGround * DistanceFromGround;
     }
-
-    void Update()
-    {
-        if (!Alive) return;
-
-        if (Mathf.Abs(Input.GetAxis("Space")) > InputDeadzone)
-        {
-            Explode();
-        }
-
-        // Boost/brake handling
-        Boosting = false;
-        Braking = false;
-        if (Mathf.Abs(VerticalInput) > InputDeadzone)
-        {
-            if (VerticalInput < 0)
-            {
-                Braking = true;
-            }
-            else
-            {
-                Boosting = true;
-            }
-        }
-    }
-
-    void FixedUpdate()
+    
+    void FixedUpdate() 
     {
         if (!Alive)
         {
-            foreach (var part in DestructionParts)
-            {
-                if (!part)
-                {
-                    return;
-                }
-            }
-
-            var positions = DestructionParts.Select(part => part.transform.position).ToList();
-
-            Vector3 averagePosition = new Vector3();
-            foreach (var position in positions)
-            {
-                averagePosition += position;
-            }
-            averagePosition /= positions.Count;
-
-            // Sometimes the avg is NaN
-            if (float.IsNaN(averagePosition.x)) averagePosition = DestructionPoint;
-
-            transform.position = (averagePosition + DestructionPoint) / 2f;
             return;
         }
 
         float dt = Time.fixedDeltaTime;
-        // Helper vector towards the planet from the player
+        // Helper vector towards the planet from the chopper
         Vector3 towardsPlanet = PlanetReference.transform.position - transform.position;
 
         // Input
         var newForward = Velocity.normalized;
+
+        // Simulate input
+        var HorizontalInput = 0f;
+        var VerticalInput = 0f;
 
         // Turning
         newForward = Quaternion.AngleAxis(HorizontalInput * TurningSpeed * dt, -towardsPlanet) * newForward;
 
         // Air speed calculations
         var effectiveAirspeed = Airspeed;
-        if (Boosting) effectiveAirspeed += Airspeed * BoostScale * Mathf.Abs(VerticalInput);
-        if (Braking) effectiveAirspeed += Airspeed * BrakeScale * Mathf.Abs(VerticalInput);
+        //if (Boosting) effectiveAirspeed += Airspeed * BoostScale * Mathf.Abs(VerticalInput);
+        //if (Braking) effectiveAirspeed += Airspeed * BrakeScale * Mathf.Abs(VerticalInput);
 
         var newVelocity = Velocity + newForward * effectiveAirspeed;
 
@@ -164,10 +89,11 @@ public class PlayerController : MonoBehaviour
         var normalizedVelocity = normalizedTarget - transform.position;
 
         // TEMP
-        debugSphere.transform.position = GroundPosition(transform.position);
+        //debugSphere.transform.position = GroundPosition(transform.position);
 
-        // Move drop marker under the player
-        DropMarker.transform.position = GroundPosition(transform.position);
+        // TODO: marker for chopper?
+        // Move drop marker under the chopper
+        //DropMarker.transform.position = GroundPosition(transform.position);
 
         // Apply projected velocity after smoothing
         Velocity = Vector3.Slerp(Velocity, normalizedVelocity, VelocitySmoothing);
@@ -178,7 +104,7 @@ public class PlayerController : MonoBehaviour
         // Rotate the player to travel forward
         transform.rotation = Quaternion.LookRotation(Velocity, -towardsPlanet);
 
-        // Rotate the player model when turning
+        // Rotate the chopper model when turning or accelerating/decelerating
         var turning = TurningAngle * -HorizontalInput;
         modelRotationTarget = Quaternion.AngleAxis(turning, Vector3.forward);
         ModelReference.transform.localRotation = Quaternion.Slerp(ModelReference.transform.localRotation, modelRotationTarget, TurningSmoothing);
@@ -188,11 +114,13 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Obstacle") || 
             other.gameObject.CompareTag("Chopper") || 
+            other.gameObject.CompareTag("Player") || 
             other.gameObject.CompareTag("Missile"))
         {
             Explode();
         }
     }
+
 
     /// <summary>
     /// Returns the distance to ground at current location
@@ -208,7 +136,7 @@ public class PlayerController : MonoBehaviour
             return hit.point;
         }
 
-        Debug.LogWarning("No ground under player. Shouldn't happen.");
+        Debug.LogWarning("No ground under chopper. Shouldn't happen.");
         return Vector3.zero;
     }
 
@@ -222,7 +150,6 @@ public class PlayerController : MonoBehaviour
         DestructionParts.AddRange(ModelReference.GetComponentsInChildren<MeshRenderer>().Select(t => t.gameObject));
 
         Alive = false;
-        DestructionPoint = transform.position;
 
         var allParts = ModelReference.GetComponentsInChildren<Transform>().Select(t => t.gameObject);
 
@@ -258,13 +185,5 @@ public class PlayerController : MonoBehaviour
         }
 
         // TODO: spawn explosion?
-        var particleSystems = ParticleEffects.GetComponentsInChildren<ParticleSystem>();
-
-        foreach (var ps in particleSystems)
-        {
-            var em = ps.emission;
-            em.rateOverTime = 0f;
-            Destroy(ps, ps.main.startLifetime.constant);
-        }
     }
 }

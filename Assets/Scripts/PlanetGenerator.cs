@@ -128,7 +128,7 @@ public class PlanetGenerator : MonoBehaviour
                     break;
                 }
             }
-            /*
+            
             // For color smoothing
             var colorBalance = (distance - limits[slotIndex]) / (limits[slotIndex + 1] - limits[slotIndex]);
 
@@ -138,9 +138,9 @@ public class PlanetGenerator : MonoBehaviour
                 Mathf.Lerp(startColor.b, endColor.b, colorBalance),
                 Mathf.Lerp(startColor.a, endColor.a, colorBalance)
                 );
-            */
+            
 
-            colors[i] = startColor;
+            //colors[i] = startColor;
         }
 
         // Go through all triangles, and set the vertex colors to be the average of the three

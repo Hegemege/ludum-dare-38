@@ -45,8 +45,8 @@ public class PlanetGravity : MonoBehaviour
         {
             hitGround = true;
             Gravity /= 3f;
-            rb.drag = 0.30f;
-            rb.angularDrag = 3f;
+            rb.drag = 0.25f;
+            rb.angularDrag = 0.5f;
         }
     }
 }
