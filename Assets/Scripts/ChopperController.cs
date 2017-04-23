@@ -6,11 +6,19 @@ using System.Linq;
 public class ChopperController : MonoBehaviour 
 {
     public GameObject PlanetReference;
+    public GameObject PlayerReference;
+    public GameObject MissilePrefab;
+    public GameObject MissileSpawnAnchor;
 
     // Self-references
     public GameObject ModelReference;
     public float TurningSmoothing;
     public float TurningAngle;
+    public float PlayerFollowDistance;
+    public float PlayerSeekDistance;
+    public float PlayerFireDistance;
+
+    public float FollowVelocityAdjust;
 
     // Physics parameters
     public float Airspeed;
@@ -26,7 +34,8 @@ public class ChopperController : MonoBehaviour
     public Vector3 Velocity;
 
     [HideInInspector]
-    public Vector3[] VelocityHistory;
+    public float[] VelocityHistory;
+    private int velocityHistoryIndex;
 
     [HideInInspector]
     public bool Alive;
@@ -40,12 +49,18 @@ public class ChopperController : MonoBehaviour
     void Awake() 
     {
         Alive = true;
+        VelocityHistory = new float[10];
     }
 
     void Start() 
     {
         // Initialize velocity as forward
         Velocity = Airspeed * new Vector3(0f, 0f, 1f) * Time.fixedDeltaTime;
+
+        for (var i = 0; i < VelocityHistory.Length; ++i)
+        {
+            VelocityHistory[i] = Velocity.magnitude;
+        }
 
         // Move the chopper to be at the correct height
         var groundPoint = GroundPosition(transform.position);
@@ -69,15 +84,50 @@ public class ChopperController : MonoBehaviour
 
         // Simulate input
         var HorizontalInput = 0f;
-        var VerticalInput = 0f;
+        var VerticalInput = 0f; // Not really used
+
+        // If player is relative to the left, bank left etc
+        Vector3 towardsPlayer = PlayerReference.transform.position - transform.position;
+        Vector3 towardsPlayerNormalized = Vector3.ProjectOnPlane(towardsPlayer, -towardsPlanet);
+        HorizontalInput = Mathf.Clamp(Vector3.Dot(towardsPlayerNormalized, transform.right) * 2, -1f, 1f);
+
+        // If player is too close, and behind us, bank the opposite way
+        if (Vector3.Distance(PlayerReference.transform.position, transform.position) < PlayerFollowDistance && 
+            Vector3.Dot(towardsPlayerNormalized, transform.forward) < 0)
+        {
+            HorizontalInput *= -1;
+        }
+
+        // Acceleration/deceleration
+        float minVelocity = VelocityHistory.Min();
+        float maxVelocity = VelocityHistory.Max();
+        float averageVelocity = VelocityHistory.Average();
+
+        if (Velocity.magnitude > averageVelocity)
+        {
+            VerticalInput = (Velocity.magnitude - averageVelocity) / (maxVelocity - averageVelocity);
+        }
+        else if (Velocity.magnitude < averageVelocity)
+        {
+            VerticalInput = -(1f - (averageVelocity - Velocity.magnitude) / (averageVelocity - minVelocity));
+        }
 
         // Turning
         newForward = Quaternion.AngleAxis(HorizontalInput * TurningSpeed * dt, -towardsPlanet) * newForward;
 
         // Air speed calculations
         var effectiveAirspeed = Airspeed;
-        //if (Boosting) effectiveAirspeed += Airspeed * BoostScale * Mathf.Abs(VerticalInput);
-        //if (Braking) effectiveAirspeed += Airspeed * BrakeScale * Mathf.Abs(VerticalInput);
+
+        // Adjust airspeed based on vertical input and if the player is too close or too far
+        if (Vector3.Distance(PlayerReference.transform.position, transform.position) > PlayerSeekDistance)
+        {
+            effectiveAirspeed += FollowVelocityAdjust;
+        }
+
+        if (Vector3.Distance(PlayerReference.transform.position, transform.position) < PlayerFollowDistance)
+        {
+            effectiveAirspeed -= FollowVelocityAdjust;
+        }
 
         var newVelocity = Velocity + newForward * effectiveAirspeed;
 
@@ -98,7 +148,7 @@ public class ChopperController : MonoBehaviour
         // Apply projected velocity after smoothing
         Velocity = Vector3.Slerp(Velocity, normalizedVelocity, VelocitySmoothing);
 
-        // Move the plane
+        // Move the chopper
         transform.position += Velocity * dt;
 
         // Rotate the player to travel forward
@@ -107,7 +157,16 @@ public class ChopperController : MonoBehaviour
         // Rotate the chopper model when turning or accelerating/decelerating
         var turning = TurningAngle * -HorizontalInput;
         modelRotationTarget = Quaternion.AngleAxis(turning, Vector3.forward);
+        modelRotationTarget *= Quaternion.AngleAxis(TurningAngle * VerticalInput/3, Vector3.right);
         ModelReference.transform.localRotation = Quaternion.Slerp(ModelReference.transform.localRotation, modelRotationTarget, TurningSmoothing);
+
+        // Update Velocity history
+        VelocityHistory[velocityHistoryIndex] = Velocity.magnitude;
+        velocityHistoryIndex = (velocityHistoryIndex + 1) % VelocityHistory.Length;
+
+
+        // FIRING MISSILES
+
     }
 
     void OnTriggerEnter(Collider other)

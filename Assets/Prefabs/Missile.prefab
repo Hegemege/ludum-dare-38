@@ -19,6 +19,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4081336886084176}
+  - component: {fileID: 114275467568841384}
+  - component: {fileID: 54532485756154152}
   m_Layer: 0
   m_Name: Missile
   m_TagString: Missile
@@ -642,6 +644,21 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1580821741979726}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &54532485756154152
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1095610135083514}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!114 &114160466663075060
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -655,6 +672,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RotationSpeed: 500
   RotationAxis: {x: 0, y: 0, z: 1}
+--- !u!114 &114275467568841384
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1095610135083514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ae398e49fffbb43b4f0264735fd084, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlanetReference: {fileID: 0}
+  Airspeed: 2000
+  TurningSpeed: 0
+  VelocitySmoothing: 0.1
+  DistanceFromGround: 18
+  GroundLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  Velocity: {x: 0, y: 0, z: 0}
+  Alive: 0
 --- !u!136 &136523794429162860
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -720,7 +758,7 @@ ParticleSystem:
       m_PostInfinity: 2
       m_RotationOrder: 4
     minMaxState: 0
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: -460753221
