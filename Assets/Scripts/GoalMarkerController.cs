@@ -37,10 +37,9 @@ public class GoalMarkerController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("HIT");
         if (other.gameObject.CompareTag("Player"))
         {
-            GameState.instance.PickedFarms += 1;
+            GameState.instance.PickedMarkers += 1;
 
             // TODO: sound effect
 

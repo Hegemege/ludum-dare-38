@@ -283,6 +283,8 @@ public class ChopperController : MonoBehaviour
 
         Alive = false;
 
+        GameState.instance.ChoppersDestroyed += 1;
+
         var allParts = ModelReference.GetComponentsInChildren<Transform>().Select(t => t.gameObject);
 
         foreach (var part in allParts)

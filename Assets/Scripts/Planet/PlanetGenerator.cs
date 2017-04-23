@@ -392,6 +392,8 @@ public class PlanetGenerator : MonoBehaviour
             newChopper.GetComponent<ChopperController>().PlayerReference = PlayerReference;
 
             choppers.Add(newChopper);
+
+            GameState.instance.MaxChoppers += 1;
         }
     }
     
@@ -461,6 +463,12 @@ public class PlanetGenerator : MonoBehaviour
 
     public GameObject GetRandomPlatform()
     {
+        // Force farm if 0 of them
+        if (GameState.instance.MaxMarkers == 0)
+        {
+            return PlatformContentPrefabs[1];
+        }
+
         return WeightedRandomizer.From(PlatformContentDict).TakeOne();
     }
 }

@@ -62,6 +62,11 @@ public class PlatformController : MonoBehaviour
         // Generate the marker for farms
         if (content.gameObject.CompareTag("Farm"))
         {
+            if (!Regenerate)
+            {
+                GameState.instance.MaxMarkers += 1;
+            }
+
             var marker = Instantiate(MarkerPrefab);
 
             marker.transform.parent = gameObject.transform;

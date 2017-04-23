@@ -26,8 +26,10 @@ public class GameState : MonoBehaviour
     public bool[] LevelRegenerateChoppers;
 
     // Progress stats
-    public int PickedFarms;
+    public int MaxMarkers;
+    public int PickedMarkers;
     public int ChoppersDestroyed;
+    public int MaxChoppers;
 
     void Awake() 
     {
@@ -46,11 +48,23 @@ public class GameState : MonoBehaviour
     
     void Start() 
     {
-    
+        
     }
     
     void Update() 
     {
-    
+        
+    }
+
+    /// <summary>
+    /// Starts a new level
+    /// </summary>
+    public void NewLevel()
+    {
+        // TODO: Get max totals?
+        MaxMarkers = 0;
+        MaxChoppers = 0;
+        PickedMarkers = 0;
+        ChoppersDestroyed = 0;
     }
 }
