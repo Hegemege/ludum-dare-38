@@ -263,12 +263,12 @@ MonoBehaviour:
   PlatformsReference: {fileID: 1691712226}
   PlayerReference: {fileID: 417841622}
   SpawnZoneReference: {fileID: 1250519084}
-  SpawnZoneSafeDistance: 30
+  SpawnZoneSafeDistance: 45
   PlatformContentPrefabs:
   - {fileID: 1172813104081128, guid: a25b361cea8510943a79ff2c6e4f38fe, type: 2}
   - {fileID: 1725771810969462, guid: 8e2d9c6a059975543b95d1a98a92647e, type: 2}
   - {fileID: 1571264509906962, guid: 57fb9e635adcc6941905a9722f53cfc6, type: 2}
-  PlatformContentWeights: 050000001400000014000000
+  PlatformContentWeights: 070000000f0000000a000000
   PlatformPrefab: {fileID: 1688186614372336, guid: 139ecebef47f8af47acdfbf5a37e322c,
     type: 2}
   PlatformLayerMask:
@@ -700,7 +700,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1250519084}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 80.7, z: 0}
+  m_LocalPosition: {x: 0, y: 80.7, z: 6.7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

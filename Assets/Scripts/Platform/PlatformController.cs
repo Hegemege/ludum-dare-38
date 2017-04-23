@@ -27,7 +27,7 @@ public class PlatformController : MonoBehaviour
 
         if (Triggered && content.GetComponent<PlatformContent>().IsDone)
         {
-            if (Vector3.Dot(towardsPlayer.normalized, -transform.up) > 0.7f)
+            if (Vector3.Dot(towardsPlayer.normalized, -transform.up) > 0.8f)
             {
                 // Re-generate the content
                 GenerateContent();
@@ -49,6 +49,8 @@ public class PlatformController : MonoBehaviour
 
         content.transform.position = transform.position;
         content.transform.rotation = transform.rotation;
+
+        content.transform.parent = transform;
 
         Triggered = false;
     }

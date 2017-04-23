@@ -113,10 +113,12 @@ public class ChopperController : MonoBehaviour
         {
             if (Vector3.Distance(avoidTarget.transform.position, transform.position) > ChopperAvoidDistance)
             {
+                Debug.Log("Remove avoid");
                 avoidTarget = null;
             }
             else
             {
+                Debug.Log("ABORT");
                 var towardsAvoid = avoidTarget.transform.position - transform.position;
                 var towardsAvoidNormalized = Vector3.ProjectOnPlane(towardsAvoid, -towardsPlanet);
                 HorizontalInput = -Mathf.Clamp(Vector3.Dot(towardsAvoidNormalized.normalized, transform.right) * 2, -1f, 1f);
@@ -231,11 +233,23 @@ public class ChopperController : MonoBehaviour
 
         if (other.gameObject.CompareTag("ChopperAvoid"))
         {
-            // If they are the same
+            // If they are the same, return
             if (other.gameObject.transform.root == gameObject.transform.root) return;
 
-            // Set them as the avoidance target, until they go far away - only one chopper to avoid
-            avoidTarget = other.gameObject.transform.root.gameObject;
+            // Set them as the avoidance target, until they go far away - only one target to avoid
+            avoidTarget = other.gameObject.transform.parent.gameObject;
+        }
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.CompareTag("ChopperAvoid"))
+        {
+            // If they are the same, return
+            if (other.gameObject.transform.root == gameObject.transform.root) return;
+
+            // Set them as the avoidance target, until they go far away - only one target to avoid
+            avoidTarget = other.gameObject.transform.parent.gameObject;
         }
     }
 
