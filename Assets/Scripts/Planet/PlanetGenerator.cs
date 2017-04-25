@@ -449,6 +449,13 @@ public class PlanetGenerator : MonoBehaviour
             return null;
         }
 
+        // Do not spawn near player
+        var playerTowardsPlanet = PlanetReference.transform.position - PlayerReference.transform.position;
+        if (Vector3.Dot(playerTowardsPlanet, randPoint) < 0) // If trying to spawn on the same hemisphere
+        {
+            return null;
+        }
+
         // Spherecast
         var colliders = Physics.OverlapSphere(randPoint, ChopperSpawnSafeDistance, ChopperLayerMask, QueryTriggerInteraction.Collide);
 
